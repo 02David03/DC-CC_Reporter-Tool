@@ -1,13 +1,4 @@
-import os
-import shutil
-import subprocess
-import json
-import pathlib
-from pycparser import parse_file, c_ast, c_generator
-
-LIBRARY_FILE = 'libsut.so'
-
-FUNCTIONS_JSON_FILE = 'functions.json'
+from pycparser import c_ast
 
 TYPE_TO_FORMAT = {
     'int': '%d',
@@ -46,7 +37,7 @@ def create_instrumentation_code (title, printf_formats, printf_args):
     )
     return [delimiter, intercept_instruction, delimiter]
 
-class Instrumentator(c_ast.NodeVisitor):
+class Instrumentator (c_ast.NodeVisitor):
     functions = {}
     
     def __init__(self, selection, exclude):
@@ -112,46 +103,5 @@ class Instrumentator(c_ast.NodeVisitor):
         ]
         
         self.functions[function_name] = params
-        
 
-def instrument_source (source_dir, output_dir, selection, exclude):
-
-    filenames = list(filter(
-            lambda f: f.endswith('.c'),
-            os.listdir(source_dir)
-    ))
-
-    shutil.rmtree(output_dir, ignore_errors=True)
-    os.mkdir(output_dir)
-    
-    script_dir = pathlib.Path(__file__).parent.absolute()
-    for filename in filenames:
-        ast = parse_file(
-            os.path.join(source_dir, filename),
-            use_cpp=True,
-            cpp_args=['-E', '-I' + str(script_dir.joinpath('fake_libc_include'))]
-        )
-    
-        instrumentator = Instrumentator(selection, exclude)
-        instrumentator.visit(ast)
-    
-        generator = c_generator.CGenerator()
-        output_file = open(os.path.join(output_dir, filename), 'w')
-        output_file.write('int printf(const char * format, ...);\n')
-        output_file.write(generator.visit(ast))
-        output_file.close()
-        
-        functions_json_file = open(os.path.join(output_dir, FUNCTIONS_JSON_FILE), 'w')
-        json.dump(instrumentator.functions, functions_json_file, sort_keys=True, indent=2)
-        functions_json_file.close()
-        
-    compilation_command = ['gcc', '-shared', '-o', LIBRARY_FILE, '-fPIC', *filenames]
-    # compilation_command = [
-    #   'gcc', '-o', 'executable', *filenames
-    # ]
-    try:
-        subprocess.run(compilation_command, check=True, cwd=output_dir)
-        print("Compilation completed.")
-    except subprocess.CalledProcessError as e:
-        print(f"Compilation failure: {e}")
     

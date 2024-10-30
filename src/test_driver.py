@@ -2,7 +2,7 @@ import ctypes
 import csv
 import re
 
-from instrumentation import DELIMITER
+from instrumentator import DELIMITER
 from instrumented_data_collector import InstrumentedDataCollector
 
 INSTRUMENTATION_REGEX = re.compile(DELIMITER + r'(\w+)\.(in|out)')

@@ -1,9 +1,8 @@
 import argparse
 import os
 import json
-import ctypes
 
-import instrumentation
+import instrument
 from test_driver import test_c_function
 from dc_cc_analyzer import analyze_dc_cc
 
@@ -50,15 +49,15 @@ if opts.source_dir:
     if opts.except_functions:
         selection.update(opts.except_functions.split(','))
     exclude = not opts.functions
-    instrumentation.instrument_source(opts.source_dir, opts.storage_dir, selection, exclude)
+    instrument.instrument_source(opts.source_dir, opts.storage_dir, selection, exclude)
 
 if opts.sut:
     if not os.path.isfile(opts.test_csv):
         print('CSV file "%s" not found!' % opts.test_csv)
         exit(1)
 
-    function_defs_json_path = os.path.join(opts.storage_dir, instrumentation.FUNCTIONS_JSON_FILE)
-    c_library_path = os.path.join(opts.storage_dir, instrumentation.LIBRARY_FILE)
+    function_defs_json_path = os.path.join(opts.storage_dir, instrument.FUNCTIONS_JSON_FILE)
+    c_library_path = os.path.join(opts.storage_dir, instrument.LIBRARY_FILE)
     if not (os.path.isfile(function_defs_json_path) and os.path.isfile(c_library_path)):
         print('Could not load folder "%s".' % opts.storage_dir)
         print('Make sure it is previously instrumented code!')
