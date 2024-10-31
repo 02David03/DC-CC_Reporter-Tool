@@ -22,7 +22,7 @@ def cpp (filename):
     )
     return process_result.stdout
 
-def analyze_includes (filename, txt):
+def analyze_includes (filename, txt, starting_lineno):
     """
     Text -> [(Lineno, Text)]
     """
@@ -44,7 +44,7 @@ def analyze_includes (filename, txt):
         match = CPP_INCLUDE_REGEX.match(line)
         if match:
             if match[2] == filename:
-                header_lineno = int(match[1])
+                header_lineno = int(match[1]) if header_lineno != 0 else starting_lineno
                 capturing_included_source = False
             elif not capturing_included_source:
                 capturing_included_source = True
@@ -142,11 +142,21 @@ class CTransformer:
     def transform (self, filepath):
         cpped_txt = cpp(filepath)
 
-        includes = analyze_includes(filepath, cpped_txt)
-
         fp = open(filepath)
         orig_txt_lines = fp.readlines()
         fp.close()
+
+        # the C source, after being passed through GNU preprocessor,
+        # starts counting the file lines at 1 and does not ensure
+        # that it contains some relevant programming statement
+        # (e.g. not a comment or blank line)
+        starting_lineno = 1
+        for i, line in enumerate(orig_txt_lines):
+            if line.lstrip().startswith('#include'):
+                starting_lineno = i + 1
+                break
+        includes = analyze_includes(filepath, cpped_txt, starting_lineno)        
+        
         included_headers = []
         included_headers_srcs = []
         for lineno, header_src_lines in includes:

@@ -7,13 +7,25 @@ from instrumented_data_collector import InstrumentedDataCollector
 
 INSTRUMENTATION_REGEX = re.compile(DELIMITER + r'(\w+)\.(in|out)')
 
-def _convert_string (string, type):
-    if type == 'int':
+def _convert_string (string, param_type):
+    if param_type in ['int']:
         return int(string)
-    elif type in ['float', 'double']:
+    elif param_type in ['float', 'double']:
         return float(string)
     else:
         return string
+    
+def _convert_csv_string (string, param_type):
+    if param_type == 'char':
+        return int(string)
+    else:
+        return _convert_string(string, param_type)
+
+def _convert_collected_string (string, param_type):
+    if param_type == 'char':
+        return bytes(string, 'utf-8')[0]
+    else:
+        return _convert_string(string, param_type)
 
 class TestResults:
     inputs = []
@@ -43,7 +55,7 @@ class TestResults:
                     entry = components_outputs_entry
                 converted_param_list = []
                 for param_def, param_value in zip(filter(filter_lambda, function_def), params):
-                    converted_param_list.append(_convert_string(param_value, param_def['type']))
+                    converted_param_list.append(_convert_collected_string(param_value, param_def['type']))
                 entry[function_name] = converted_param_list
         
         self.components_inputs.append(components_inputs_entry)
@@ -102,7 +114,7 @@ def test_c_function (sut_name, c_library_path, functions_defs, test_csv, compare
             for i in range(len(sut_def)):
                 if i in input_idxs:
                     param_type = sut_def[i]['type']
-                    converted_input = _convert_string(row[i], param_type)
+                    converted_input = _convert_csv_string(row[i], param_type)
                     inputs.append(converted_input)
                     args.append(converted_input)
                 else:
@@ -119,7 +131,7 @@ def test_c_function (sut_name, c_library_path, functions_defs, test_csv, compare
             for i, var in zip(output_idxs, output_variables):
                 already_failed = False
                 param_type = sut_def[i]['type']
-                expected_result = _convert_string(row[i], param_type)
+                expected_result = _convert_csv_string(row[i], param_type)
                 actual_result = var.value
                 outputs.append(actual_result)
                 if not compare(expected_result, actual_result):

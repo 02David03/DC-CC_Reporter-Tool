@@ -32,9 +32,18 @@ def instrument_source (source_dir, output_dir, selection, exclude):
     c_transformer = CTransformer(instrumentator)
     for filename in c_files:
 
-        c_transformed = c_transformer.transform(os.path.join(source_dir, filename))
+        try:
+            c_transformed = c_transformer.transform(os.path.join(source_dir, filename))
+        except KeyError as error:
+            print('Could not process type "%s" on file "%s"' % (
+                error.args[0],
+                filename
+            ))
+            exit(1)
 
         output_file = open(os.path.join(output_dir, filename), 'w')
+        # ensure printf is defined even if the source to instrument
+        # does not include <stdio.h>
         output_file.write('int printf(const char * format, ...);\n')
         output_file.write(c_transformed)
         output_file.close()

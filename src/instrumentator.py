@@ -1,13 +1,29 @@
 from pycparser import c_ast
 
-TYPE_TO_FORMAT = {
+KCG_TYPE_TO_LITERAL_TYPE = {
+    'kcg_int': 'int',
+    'kcg_real': 'double',
+    'kcg_bool': 'char',
+    'kcg_char': 'char'
+}
+
+LITERAL_TYPE_TO_FORMAT = {
     'int': '%d',
     'float': '%f',
     'double': '%lf',
-    'char': '%s'
+    'char': '%c'
 }
 
 DELIMITER = 'ΣΣΣΣ'
+
+
+# Simulink defines its own KCG types (header "kcg_types.h")
+def expand_kcg_type (some_type):
+    literal_type = KCG_TYPE_TO_LITERAL_TYPE.get(some_type)
+    if literal_type:
+        return literal_type
+    else:
+        return some_type
 
 
 def create_instrumentation_code (title, printf_formats, printf_args):
@@ -52,10 +68,10 @@ class Instrumentator (c_ast.NodeVisitor):
         else:
             if not function_name in self.selection:
                 return
-        ast_args = node.decl.type.args
-        if not ast_args:
+        function_arg_list = node.decl.type.args
+        if not function_arg_list:
             return
-        ast_params = ast_args.params
+        declared_params = function_arg_list.params
 
         printf_input_formats = []
         printf_input_args = []
@@ -63,25 +79,29 @@ class Instrumentator (c_ast.NodeVisitor):
         printf_output_args = []
 
         params = []
-        for param in ast_params:
+        for param in declared_params:
+            if isinstance(param.type, c_ast.ArrayDecl):
+                print('Skipping function "%s" because param "%s" is array' % (
+                    function_name,
+                    param.name
+                ))
+                return
             is_pointer = isinstance(param.type, c_ast.PtrDecl)
             if is_pointer:
                 # PtrDecl -> TypeDecl -> IdentifierType
-                type = param.type.type.type.names[0]
-                if type == 'char':
-                    printf_input_formats.append(TYPE_TO_FORMAT[type])
-                    printf_input_args.append(param.name)
-                else:
-                    printf_output_formats.append(TYPE_TO_FORMAT[type])
-                    printf_output_args.append('*' + param.name)
+                param_type = param.type.type.type.names[0]
+                param_type = expand_kcg_type(param_type)
+                printf_output_formats.append(LITERAL_TYPE_TO_FORMAT[param_type])
+                printf_output_args.append('*' + param.name)
             else:
                 # TypeDecl -> IdentifierType
-                type = param.type.type.names[0]
-                printf_input_formats.append(TYPE_TO_FORMAT[type])
+                param_type = param.type.type.names[0]
+                param_type = expand_kcg_type(param_type)
+                printf_input_formats.append(LITERAL_TYPE_TO_FORMAT[param_type])
                 printf_input_args.append(param.name)
             params.append({
                 'name': param.name,
-                'type': type,
+                'type': param_type,
                 'is_pointer': is_pointer
             })
 
