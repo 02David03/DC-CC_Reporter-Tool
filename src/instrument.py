@@ -3,7 +3,7 @@ import shutil
 import subprocess
 import json
 
-from instrumentator import Instrumentator
+from elicitation_instrumentation import ElicitationInstrumentation
 from c_transformer import CTransformer
 
 LIBRARY_FILE = 'libsut.so'
@@ -28,7 +28,7 @@ def instrument_source (source_dir, output_dir, selection, exclude):
         ignore=ignore_instrumented_files
     )
 
-    instrumentator = Instrumentator(selection, exclude)
+    instrumentator = ElicitationInstrumentation(selection, exclude)
     c_transformer = CTransformer(instrumentator)
     for filename in c_files:
 

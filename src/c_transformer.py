@@ -136,7 +136,7 @@ class CTransformer:
         self.transformation = transformation
 
     """
-    The file of parameter "filename" can be before preprocessing.
+    The file of parameter "filepath" can be before preprocessing.
     It can contains directives.
     """
     def transform (self, filepath):
@@ -172,7 +172,7 @@ class CTransformer:
 
         contents =  '%s\n\n%s' % (
             ''.join(included_headers),
-            c_generator.CGenerator().visit(ast_a)
+            c_generator.CGenerator(True).visit(ast_a)
         )
 
         return contents
