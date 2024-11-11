@@ -70,7 +70,8 @@ def expand_kcg_type (some_type):
 class ElicitationInstrumentation (c_ast.NodeVisitor):
     functions = {}
     
-    def __init__(self, selection, exclude):
+    def __init__(self, sut_name, selection, exclude):
+        self.sut_name = sut_name
         self.exclude = exclude
         self.selection = selection
 
@@ -121,12 +122,6 @@ class ElicitationInstrumentation (c_ast.NodeVisitor):
                 'type': param_type,
                 'is_pointer': is_pointer
             })
-
-        input_proxy_ast = ProxyAST(
-            '"\\n' + DELIMITER + function_name + '.in' + '\\n"',
-            printf_input_formats,
-            printf_input_args
-        )
         
         # The sequence of ".type" below return nodes in the following classes:
         # Decl -> TypeDecl -> IdentifierType
@@ -143,15 +138,21 @@ class ElicitationInstrumentation (c_ast.NodeVisitor):
                 'is_pointer': False
             })
             printf_output_formats.append(LITERAL_TYPE_TO_FORMAT[function_return_type])
-
-        output_proxy_ast = ProxyAST(
-            delimiter_string,
-            printf_output_formats,
-            printf_output_args
-        )
-        elicitation_code_setter = ElicitationCodeSetter(input_proxy_ast, output_proxy_ast)
-        elicitation_code_setter.insert_instrumentation(node, with_return)
-        
         self.functions[function_name] = params
+        
+        # don't instrument main SUT function,
+        # we get its return through ctypes foreign function interface
+        if function_name != self.sut_name:
+            input_proxy_ast = ProxyAST(
+                '"\\n' + DELIMITER + function_name + '.in' + '\\n"',
+                printf_input_formats,
+                printf_input_args
+            )
 
-    
+            output_proxy_ast = ProxyAST(
+                delimiter_string,
+                printf_output_formats,
+                printf_output_args
+            )
+            elicitation_code_setter = ElicitationCodeSetter(input_proxy_ast, output_proxy_ast)
+            elicitation_code_setter.insert_instrumentation(node, with_return)
