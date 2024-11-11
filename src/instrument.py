@@ -4,6 +4,7 @@ import subprocess
 import json
 
 from elicitation_instrumentation import ElicitationInstrumentation
+from func_call_analyzer import FuncCallAnalyzer
 from c_transformer import CTransformer
 
 LIBRARY_FILE = 'libsut.so'
@@ -29,7 +30,8 @@ def instrument_source (source_dir, output_dir, selection, exclude):
     )
 
     instrumentator = ElicitationInstrumentation(selection, exclude)
-    c_transformer = CTransformer(instrumentator)
+    func_call_analyzer = FuncCallAnalyzer()
+    c_transformer = CTransformer([instrumentator, func_call_analyzer])
     for filename in c_files:
 
         try:
@@ -48,8 +50,10 @@ def instrument_source (source_dir, output_dir, selection, exclude):
         output_file.write(c_transformed)
         output_file.close()
 
+    functions = func_call_analyzer.process(instrumentator.functions)
+
     functions_json_file = open(os.path.join(output_dir, FUNCTIONS_JSON_FILE), 'w')
-    json.dump(instrumentator.functions, functions_json_file, sort_keys=True, indent=2)
+    json.dump(functions, functions_json_file, sort_keys=True, indent=2)
     functions_json_file.close()
         
     compilation_command = ['gcc', '-shared', '-o', LIBRARY_FILE, '-fPIC', *c_files]
