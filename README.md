@@ -3,3 +3,19 @@ This is a project with the objective of execute test cases in a SUT(Software und
 
 Here's an image that ilustratetes the basic functionality of the tool:
 ![image](https://github.com/user-attachments/assets/ba9e6b3f-586c-4839-806c-80b063cf4edd)
+
+## Installing
+
+```
+python3 -m venv venv
+. venv/bin/activate
+pip install -r requirements.txt
+```
+
+## Running
+
+Make sure to activate **venv** beforehand.
+
+```
+python3 src/main.py <arguments>
+```
