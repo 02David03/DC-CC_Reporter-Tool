@@ -1,0 +1,70 @@
+/* Variaveis */
+:root {
+  --font-primary: "Montserrat", serif;
+  --font-secondary: "Inter", sans-serif;
+
+  --primary-color: #0067B1;
+  --warning-color:  #BF6A02;
+  --black-color: #1a1c1d;
+  --warning-bg-color-lighter: #f7df9fbd;
+  --warning-bg-color:  #f8b1188f;
+
+  --warning-filter: invert(48%) sepia(97%) saturate(3355%) hue-rotate(18deg) brightness(92%) contrast(98%);
+}
+
+html {
+  background-color: white;
+}
+
+#index-main {
+  background-color: #f3f3f3;
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.inter-uniquifier {
+  font-family: "Inter", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: weight;
+  font-style: normal;
+}
+
+.montserrat-uniquifier {
+  font-family: "Montserrat", serif;
+  font-optical-sizing: auto;
+  font-weight: 300;
+  font-style: normal;
+}
+
+h1.title {
+  color: var(--primary-color);
+  font-family: var(--font-primary);
+  font-weight: 600;
+}
+
+.accordion.warning .accordion-button {
+  color: var(--warning-color) !important;
+  font-family: var(--font-primary);
+  font-size: 20px;
+  font-weight: 600;
+  background-color: var(--warning-bg-color);
+}
+
+.accordion.warning .accordion-button::after {
+  filter: var(--warning-filter) !important;
+}
+
+.accordion.warning .accordion-button:focus {
+  box-shadow: var(--warning-bg-color-lighter);
+}
+
+.accordion.warning .accordion-body {
+  background-color: var(--warning-bg-color-lighter);
+}
+
+#warning-list li {
+  font-family: var(--font-secondary);
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--black-color);
+}
