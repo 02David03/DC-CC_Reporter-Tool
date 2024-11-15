@@ -27,7 +27,7 @@
     <main id="index-main" class="container mt-4">
       <h1 class="text-center"> Relatório de cobertura da análise de DC/CC </h1>
 
-      <!-- Avisos -->
+      <!-- Warnings -->
       <div class="accordion warning mt-3" id="accordionExample">
         <div class="accordion-item">
           <h2 class="accordion-header" id="headingOne">
@@ -44,11 +44,13 @@
         </div>
       </div>
 
+      <!-- SUT coupling Analyses -->
       <div class="row my-4">
         <div class="col-6">
           <div class="content-box d-flex align-items-center flex-column">
-            <h2 class="mb-3"> Acoplamento do SUT </h2>
-            <canvas id="GRN0-index-graph" width="300" height="300"></canvas>
+            <!-- Donut Graph -->
+            <h2 class="mb-4"> Acoplamento do SUT </h2>
+            <canvas id="GRN0-donut-graph" width="300" height="300"></canvas>
             <span id="GRN0-tooltip" class="tooltip-graph"></span>
             <div id="coupling-graph-legend" class="d-flex mt-2">
               <div class="d-flex gap-2 align-items-center">
@@ -60,10 +62,14 @@
                 <span>Não identificavel</span>
               </div>
             </div>
+            <!-- Grid Graph -->
+            <canvas id="GRN0-grid-graph" width="350" height="350"></canvas>
+            <span id="GRN0-info-box" class="info-box"></span>
+
+            <a class="ms-auto mt-2" href=""> Ver mais</a>
           </div>
         </div>
       </div>
-      <!-- Acoplamento do SUT -->
 
 
     </main>

@@ -30,6 +30,6 @@ function mountAnalysesGRN0() {
       graphData[1]++
     }
   }
-  mountDonutCouplingGraph("GRN0-index-graph", "GRN0-tooltip", graphData);
-
+  mountCouplingDonutGraph("GRN0-donut-graph", "GRN0-tooltip", graphData);
+  mountCouplingGridGraph("GRN0-grid-graph", "GRN0-info-box", couplingSUT);
 }

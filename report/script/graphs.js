@@ -1,6 +1,6 @@
 
-function mountDonutCouplingGraph(el_id, tooltip_id, data) {
-  const canvas = document.getElementById(el_id);
+function mountCouplingDonutGraph(canva_id, tooltip_id, data) {
+  const canvas = document.getElementById(canva_id);
   const ctx = canvas.getContext("2d");
 
   const labels = ["Entradas acopladas", "Entradas não identificaveis"];
@@ -64,8 +64,8 @@ function mountDonutCouplingGraph(el_id, tooltip_id, data) {
         if (angle >= currentAngle && angle < currentAngle + sliceAngle) {
            // Atualiza o conteúdo e posição do tooltip
             tooltip.style.display = "block";
-            tooltip.style.left = `${event.clientX + 10}px`;
-            tooltip.style.top = `${event.clientY + 10}px`;
+            tooltip.style.left = `${event.layerX + 10}px`;
+            tooltip.style.top = `${event.layerY + 10}px`;
             tooltip.innerHTML = `
               <strong>${labels[i]}</strong><br>
               ${data[i]}
@@ -85,4 +85,91 @@ function mountDonutCouplingGraph(el_id, tooltip_id, data) {
   });
 }
 
+function mountCouplingGridGraph(canva_id, info_box_id, data) {
+  const canvas = document.getElementById(canva_id);
+  const ctx = canvas.getContext('2d');
+  const infoBox = document.getElementById(info_box_id);
+  const dotRadius = 5;
+  const padding = 40;
+
+  // Organizar dados para obter listas ordenadas de entradas e saídas
+  const entries = Object.keys(data).map(Number).sort((a, b) => a - b);
+  const outputs = [...new Set(Object.values(data).flatMap(obj => Object.keys(obj).map(Number)))].sort((a, b) => a - b);
+
+  drawGrid(canvas, ctx, entries, outputs, padding);
+  drawCouplingPoints(canvas, ctx, infoBox, dotRadius, padding, entries, outputs, data);
+}
+
+// Função para desenhar a grade
+function drawGrid(canvas, ctx, entries, outputs, padding) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+  // Desenhar linhas pontilhadas e rótulos nos eixos
+  for (let i = 0; i < entries.length; i++) {
+    let y = padding + i * (canvas.height - padding * 2) / (entries.length - 1);
+    ctx.strokeStyle = '#ccc';
+    ctx.setLineDash([5, 5]);
+    ctx.beginPath();
+    ctx.moveTo(padding, y);
+    ctx.lineTo(canvas.width - padding, y);
+    ctx.stroke();
+
+    ctx.fillStyle = '#000';
+    ctx.fillText(entries[i], padding - 20, y + 3);
+  }
+
+  for (let j = 0; j < outputs.length; j++) {
+    let x = padding + j * (canvas.width - padding * 2) / (outputs.length - 1);
+    ctx.beginPath();
+    ctx.moveTo(x, padding);
+    ctx.lineTo(x, canvas.height - padding);
+    ctx.stroke();
+
+    ctx.fillStyle = '#000';
+    ctx.fillText(outputs[j], x - 5, canvas.height - padding + 20);
+  }
+}
+
+// Função para desenhar pontos de acoplamento
+function drawCouplingPoints(canvas, ctx, infoBox, dotRadius, padding, entries, outputs, data) {
+  for (let i = 0; i < entries.length; i++) {
+    const entry = entries[i];
+    for (let j = 0; j < outputs.length; j++) {
+      const output = outputs[j];
+
+      if (data[entry] && data[entry][output]) {
+        let x = padding + j * (canvas.width - padding * 2) / (outputs.length - 1);
+        let y = padding + i * (canvas.height - padding * 2) / (entries.length - 1);
+
+        ctx.beginPath();
+        ctx.arc(x, y, dotRadius, 0, 2 * Math.PI);
+        ctx.fillStyle = '#0067B1';
+        ctx.fill();
+
+        // Adicionar dados ao ponto para interatividade
+        canvas.addEventListener('mousemove', (event) => {
+          const rect = canvas.getBoundingClientRect();
+          const mouseX = event.clientX - rect.left;
+          const mouseY = event.clientY - rect.top;
+          console.log(event);
+          if (Math.hypot(mouseX - x, mouseY - y) < dotRadius) {
+            // Exibir tooltip com valores de acoplamento
+            infoBox.style.display = 'block';
+            infoBox.style.left = `${event.layerX + 10}px`;
+            infoBox.style.top = `${event.layerY+ 10}px`;
+            infoBox.innerHTML = `
+              <strong>Entrada:</strong> ${entry}<br>
+              <strong>Saída:</strong> ${output}<br>
+              <strong>Valores:</strong> ${data[entry][output].join(',')}
+            `;
+          }
+        });
+
+        canvas.addEventListener("mouseleave", () => {
+          infoBox.style.display = "none";
+        });
+      }
+    }
+  }
+}
 
