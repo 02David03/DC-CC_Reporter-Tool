@@ -1,8 +1,10 @@
 import argparse
 import os
 import json
+import copy
 
 import instrument
+from param_helpers import create_param_value_comparator
 from test_driver import test_c_function
 from dc_cc_analyzer import analyze_dc_cc
 
@@ -72,17 +74,11 @@ if opts.test:
         print(f'No function found with the name "{opts.sut}"')
         exit(1)
 
-    def compare (a, b):
-        type_a = type(a)
-        type_b = type(b)
-        if type_a != type_b:
-            raise Exception('Incompatible types!')
-        elif type_a == float:
-            return abs(a - b) < opts.precision
-        else:
-            return a == b
+    compare = create_param_value_comparator(opts.precision)
 
     test_results = test_c_function(opts.sut, c_library_path, function_defs, opts.test_csv, compare, opts.analyze)
 
     if opts.analyze:
-        analyze_dc_cc(test_results, opts.differences, compare)
+        component_defs = copy.deepcopy(function_defs)
+        component_defs.pop(opts.sut)
+        analyze_dc_cc(test_results, component_defs, compare)

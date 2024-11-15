@@ -1,11 +1,20 @@
 import ctypes
 import csv
 import re
+import collections
 
 from elicitation_instrumentation import DELIMITER
 from instrumented_data_collector import InstrumentedDataCollector
+from param_helpers import is_output_param
 
 INSTRUMENTATION_REGEX = re.compile(DELIMITER + r'(\w+)\.(in|out)')
+
+TestResultEntry = collections.namedtuple('TestResultEntry', [
+    'inputs',
+    'outputs',
+    'components_inputs',
+    'components_outputs'
+])
 
 def _convert_string (string, param_type):
     if param_type in ['int']:
@@ -28,10 +37,8 @@ def _convert_collected_string (string, param_type):
         return _convert_string(string, param_type)
 
 class TestResults:
-    inputs = []
-    outputs = []
-    components_inputs = []
-    components_outputs = []
+
+    _entries = []
 
     def __init__ (self, functions_defs, input_names, output_names):
         self.functions_defs = functions_defs
@@ -48,30 +55,33 @@ class TestResults:
                 function_def = self.functions_defs[function_name]
 
                 if direction == 'in':
-                    filter_lambda = lambda p: not p['is_pointer']
+                    filter_lambda = lambda p: not is_output_param(p)
                     entry = components_inputs_entry
                 else:
-                    filter_lambda = lambda p: p['is_pointer']
+                    filter_lambda = is_output_param
                     entry = components_outputs_entry
                 converted_param_list = []
                 for param_def, param_value in zip(filter(filter_lambda, function_def), params):
                     converted_param_list.append(_convert_collected_string(param_value, param_def['type']))
                 entry[function_name] = converted_param_list
         
-        self.components_inputs.append(components_inputs_entry)
-        self.components_outputs.append(components_outputs_entry)
+        return components_inputs_entry, components_outputs_entry
 
     
     def add (self, inputs, outputs, instrumented_data):
-        self.inputs.append(inputs)
-        self.outputs.append(outputs)
-        self._process_instrumented_data(instrumented_data)
+        components_inputs, components_outputs = self._process_instrumented_data(instrumented_data)
+        self._entries.append(TestResultEntry(
+            inputs,
+            outputs,
+            components_inputs,
+            components_outputs
+        ))
 
     def __len__ (self):
-        return len(self.inputs)
+        return len(self._entries)
 
     def __getitem__ (self, idx):
-        return (self.inputs[idx], self.outputs[idx])
+        return self._entries[idx]
 
 
 def test_c_function (sut_name, c_library_path, functions_defs, test_csv, compare, return_test_results):
@@ -89,7 +99,7 @@ def test_c_function (sut_name, c_library_path, functions_defs, test_csv, compare
 
     for i, param in enumerate(sut_def):
         c_type = getattr(ctypes, 'c_' + param['type'])
-        if param['is_pointer']:
+        if is_output_param(param):
             c_type = ctypes.POINTER(c_type)
             output_idxs.append(i)
             output_names.append(param['name'])
