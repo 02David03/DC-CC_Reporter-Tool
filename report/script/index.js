@@ -1,23 +1,35 @@
 //Global variables
-let warnings = [];
-let couplingSUT = {};
-let components = {};
+const warnings = json_data.warnings;
+const couplingSUT = json_data.coupling_SUT;
+const components = json_data.components;
 
-
-init();
-
-async function init() {
-  await $.getJSON('reporter.json', function(data) {
-    warnings = data.warnings;
-    couplingSUT = data.couplingSUT;
-    components = data.components;
-  });
-
-  mountWarningList();
-}
+//Call mount functions
+mountWarningList();
+mountAnalysesGRN0();
 
 function mountWarningList() {
-  for (let i = 0; i < warnings.length; i++) {
-    $('#warning-list').append("<li>" + warnings[i] + "</li>");
+  if(warnings.length === 0) {
+    $('#warning-list').addClass('d-none');
+  } else {
+    for (let i = 0; i < warnings.length; i++) {
+      $('#warning-list').append("<li>" + warnings[i] + "</li>");
+    }
   }
+}
+
+function mountAnalysesGRN0() {
+  let graphData = [0, 0];
+  for(const key in couplingSUT) {
+    const subObj = couplingSUT[key];
+    const hasValues = Object.keys(subObj).some(
+      subKey => subObj[subKey].length > 0
+    );
+    if(hasValues) {
+      graphData[0]++
+    } else{
+      graphData[1]++
+    }
+  }
+  mountDonutCouplingGraph("GRN0-index-graph", "GRN0-tooltip", graphData);
+
 }

@@ -1,4 +1,4 @@
-{
+const json_data = {
   "warnings": [
     "Não foi possível avaliar acoplamento para as entradas 2, 3 e 4, por favor considere aumentar o vetor de testes",
     "Ao utilizar o valor 54 para a saída 'output' do componente <processInput> o sistema apresentou uma excessão"
@@ -8,6 +8,9 @@
       "0": [2, 7],
       "4": [7]
     },
+    "2": {},
+    "3": {},
+    "4": {},
     "5": {
       "2": [4],
       "3": [5]

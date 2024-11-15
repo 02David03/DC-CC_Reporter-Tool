@@ -1,10 +1,13 @@
-/* Variaveis */
+/* Variables */
 :root {
   --font-primary: "Montserrat", serif;
   --font-secondary: "Inter", sans-serif;
 
   --primary-color: #0067B1;
   --warning-color:  #BF6A02;
+  --dark-blue-color: #0a1a5c;
+  --dark-white-color: #f3f3f3;
+  --gray-color: #6E6E6E;
   --black-color: #1a1c1d;
   --warning-bg-color-lighter: #f7df9fbd;
   --warning-bg-color:  #f8b1188f;
@@ -12,36 +15,45 @@
   --warning-filter: invert(48%) sepia(97%) saturate(3355%) hue-rotate(18deg) brightness(92%) contrast(98%);
 }
 
-html {
-  background-color: white;
+
+/* Default config */
+body {
+  background-color: var(--dark-white-color) !important;
 }
 
-#index-main {
-  background-color: #f3f3f3;
-  padding: 12px;
-  border-radius: 8px;
-}
 
-.inter-uniquifier {
-  font-family: "Inter", sans-serif;
-  font-optical-sizing: auto;
-  font-weight: weight;
-  font-style: normal;
-}
-
-.montserrat-uniquifier {
-  font-family: "Montserrat", serif;
-  font-optical-sizing: auto;
-  font-weight: 300;
-  font-style: normal;
-}
-
-h1.title {
+/* Typography */
+h1 {
   color: var(--primary-color);
   font-family: var(--font-primary);
-  font-weight: 600;
+  font-weight: 600 !important;
 }
 
+h2 {
+  color: var(--dark-blue-color);
+  font-family: var(--font-secondary);
+  font-weight: 500 !important;
+}
+
+
+/* Utils */
+.dark-blue-bg {
+  background-color: var(--dark-blue-color);  
+}
+
+.gray-bg {
+  background-color: var(--gray-color);
+}
+
+.content-box {
+  background-color: white;
+  border-radius: 8px;
+  padding: 16px 8px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+
+/* Accordion */
 .accordion.warning .accordion-button {
   color: var(--warning-color) !important;
   font-family: var(--font-primary);
@@ -67,4 +79,31 @@ h1.title {
   font-size: 16px;
   font-weight: 500;
   color: var(--black-color);
+}
+
+
+/* Graphics */
+
+#coupling-graph-legend {
+  display: flex;
+  font-size: 18px;
+  gap: 8px;
+  padding: 8px;
+  font-family: var(--font-primary);
+}
+
+.tooltip-graph {
+  position: absolute;
+  display: none;
+  background: rgba(0, 0, 0, 0.493);
+  font-family: var(--font-secondary);
+  color: white;
+  padding: 5px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+.sm-circle {
+  width: 12px;
+  height: 12px;
+  border-radius: 360px;
 }
