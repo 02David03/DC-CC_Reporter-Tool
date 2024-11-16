@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title> Relatório DCCC </title>
+    <title> Detalhes de acomplemento do SUT </title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="./styles/index.css">
@@ -24,34 +24,36 @@
       <img src="./assets/embraer-logo.svg" width="208px" alt="logo embraer">
     </header>
 
-    <main id="index-main" class="container mt-4">
-      <h1 class="text-center"> Relatório de cobertura da análise de DC/CC </h1>
-      <!-- Infos -->
-      <div class="accordion warning mt-3" id="accordionExample">
+    <main id="grn0-detail-main" class="container mt-4">
+      <h1 class="text-center"> Detalhes da análise de DCCC a nível de SUT </h1>
+      <a class="fs-20px" href="index.html"> &lt Voltar </a>
+
+      <div class="accordion info mt-3" id="accordionExample">
         <div class="accordion-item">
           <h2 class="accordion-header" id="headingOne">
             <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-one" aria-expanded="true" aria-controls="collapse-one">
-              <img class="me-3" src="./assets/alert-triangle.svg" width="44px" alt="atenção">
-              Algumas situações indesejadas foram identificadas durante a execução da ferramenta
+              <img class="me-3" src="./assets/info.svg" width="44px" alt="atenção">
+              Informações úteis sobre o conteúdo da análise
             </button>
           </h2>
           <div id="collapse-one" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
             <div class="accordion-body">
-              <ul class="mb-0" id="warning-list"></ul>
+              <ul class="gap-2 d-flex flex-column my-2" id="info-list">
+                <li> O termo "Não identificavel" pode significar que a entrada não apresentou acoplamentos durante a execução dos testes ou não houve possibilidade de analisar o acoplamento a partir da suíte de testes disponibilizada.</li>
+                <li> A existência de circulos azuis no gráfico de grade representa acoplamento entre entrada e saída respectiva ao ponto de encontro. Ao passar o mouse pelo ponto é possível identificar os valores de entrada que causaram acoplamento</li>
+                <li> A ausência de alguma saída do SUT tanto no gráfico de grade de acoplamentos quanto na tabela de análise de acoplamento significa que não foi identificado acoplamento para essa saída</li>
+              </ul>
             </div>
           </div>
         </div>
       </div>
 
       <div class="row my-4">
-        <!-- SUT coupling Analyses -->
-        <div id="GRN0-col" class="col-6 py-3">
-          <div class="content-box d-flex align-items-center flex-column">
+        <div id="donut-col" class="col-6 py-3">
+          <div class="content-box d-flex align-items-center h-100 flex-column">
+            <h2 class="mb-4"> Gráfico de cobertura de entradas </h2>
             <!-- Donut Graph -->
-            <a href="coupling_sut_detail.html">
-              <h2 class="mb-4"> Acoplamento do SUT </h2>
-            </a>
-            <canvas id="GRN0-donut-graph" width="300" height="300"></canvas>
+            <canvas id="GRN0-donut-graph" width="350" height="350"></canvas>
             <span id="GRN0-tooltip" class="tooltip-graph"></span>
             <div id="coupling-graph-legend" class="d-flex mt-2">
               <div class="d-flex gap-2 align-items-center">
@@ -63,54 +65,35 @@
                 <span>Não identificavel</span>
               </div>
             </div>
+          
+          </div>
+        </div>
+
+        <div id="grid-graph-col" class="col-6 py-3">
+          <div class="content-box d-flex align-items-center h-100 flex-column">
             <!-- Grid Graph -->
+            <h2 class="mb-4"> Gráfico de Grade de acoplamentos </h2>
             <canvas id="GRN0-grid-graph" width="350" height="350"></canvas>
             <span id="GRN0-info-box" class="info-box"></span>
-
-            <a class="ms-auto mt-2" href="coupling_sut_detail.html"> Ver mais</a>
           </div>
         </div>
 
-        <!-- Components List -->
-        <div id="components-col" class="col-6 py-3">
-          <div class="content-box d-flex align-items-center position-relative overflow-hidden h-100 flex-column">
-            <h2 class="mb-3"> Cobertura de componentes </h2>
-            <input id="component-filter" class="ms-auto w-75 my-3" placeholder="Filtrar componentes" type="text">
-            <div id="components-list" class="d-flex flex-wrap flex-column gap-2 align-items-start h-100 overflow-auto w-100">
-
-            </div>
-            <a class="ms-auto mt-auto mt-2" href=""> Ver mais</a>
-          </div>
-        </div>
-
-        <!-- Test Comparation Table -->
         <div class="col-12 py-3">
-          <div class="content-box d-flex align-items-center flex-column">
-            <h2 class="mb-4"> Resultados dos testes </h2>
+          <div class="content-box d-flex align-items-center h-100 flex-column">
             <!-- Table -->
-            <div id="test-table" class="d-flex justify-content-center gap-3 px-3">
-              <div id="test-col">
-                <div class="head-table-cel">
-                  Teste
-                </div>
-                <div class="subhead-table-cel" style="opacity: 0;" > #1 </div>
-              </div>
+            <h2 class="mb-4"> Tabela de análise de acoplamentos </h2>
 
+            <div id="inputs-table" class="d-flex justify-content-center gap-3 px-3">
               <div id="entries-col">
                 <div class="head-table-cel">
                   Entradas
                 </div>
+                <div class="subhead-table-cel" style="opacity: 0;" > #1 </div>
               </div>
 
-              <div id="expected-output-col">
-                <div class="head-table-cel">
-                  Saídas esperadas
-                </div>
-              </div>
-              
               <div id="output-col">
                 <div class="head-table-cel">
-                  Saídas Obtidas
+                  Saídas
                 </div>
               </div>
             </div>
@@ -123,6 +106,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
     <script src="./reporter.js" defer></script>
     <script src="./script/graphs.js" defer></script>
-    <script src="./script/index.js" defer></script>
+    <script src="./script/coupling_sut_detail.js" defer></script>
   </body>
 </html>

@@ -10,6 +10,7 @@
   --gray-lighter-color:  #c0c0c0;
   --gray-color: #6E6E6E;
   --black-color: #1a1c1d;
+  --primary-bg-color: #1889da86;
   --error-bg-color-lighter: #ac0c0c85;
   --error-bg-color: #a70808cc;
   --warning-bg-color-lighter: #f7df9fbd;
@@ -79,6 +80,10 @@ h2 {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 6px 0 rgba(199, 199, 199, 0.19);
 }
 
+.fs-20px {
+  font-size: 20px;
+}
+
 
 /* Accordion */
 .accordion.warning .accordion-button {
@@ -108,6 +113,11 @@ h2 {
   color: var(--black-color);
 }
 
+#info-list {
+  color: var(--primary-color);
+  font-size: 18px;
+  font-family: var(--font-secondary);
+}
 
 /* Graphics */
 
@@ -198,6 +208,10 @@ h2 {
 
 .table-cel.error {
   background-color: var(--error-bg-color-lighter);
+}
+
+.table-cel.coupled {
+  background-color: var(--primary-bg-color);
 }
 
 .table-cel.dark {

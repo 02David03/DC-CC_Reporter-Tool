@@ -116,6 +116,9 @@ function drawGrid(canvas, ctx, entries, outputs, padding) {
 
     ctx.fillStyle = '#000';
     ctx.fillText(entries[i], padding - 20, y + 3);
+    if(i === 0) {
+      ctx.fillText('Entradas', padding - 25, y - 20);
+    }
   }
 
   for (let j = 0; j < outputs.length; j++) {
@@ -127,6 +130,9 @@ function drawGrid(canvas, ctx, entries, outputs, padding) {
 
     ctx.fillStyle = '#000';
     ctx.fillText(outputs[j], x - 5, canvas.height - padding + 20);
+    if(j === outputs.length - 1) {
+      ctx.fillText('Saídas', x + 5, canvas.height - padding + 25);
+    }
   }
 }
 
