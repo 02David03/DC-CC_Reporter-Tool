@@ -10,7 +10,8 @@
   --gray-lighter-color:  #c0c0c0;
   --gray-color: #6E6E6E;
   --black-color: #1a1c1d;
-  --error-bg-color: #ac0c0c85;
+  --error-bg-color-lighter: #ac0c0c85;
+  --error-bg-color: #a70808cc;
   --warning-bg-color-lighter: #f7df9fbd;
   --warning-bg-color:  #f8b1188f;
 
@@ -175,10 +176,15 @@ h2 {
 }
 
 .table-cel.error {
-  background-color: var(--error-bg-color);
+  background-color: var(--error-bg-color-lighter);
 }
 
-#test-col .table-cel {
+.table-cel.dark {
   background-color: var(--gray-color);
+  color: white;
+}
+
+.table-cel.dark.error {
+  background-color:  var(--error-bg-color);
   color: white;
 }

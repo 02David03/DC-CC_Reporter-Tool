@@ -50,9 +50,9 @@ function mountTestComparationTable() {
 
   //Add cels
   Object.entries(tests).forEach(entry => {
-    insertTableCel('test-col', `Teste ${entry[0]}`);
-    insertTableCelArray('entries-col', entry[1].inputs);
-    compareAndInsertCelArray( entry[1].expected_outputs, entry[1].obtained_outputs)
+    insertTableCel('test-col', `Teste ${entry[0]}`, (entry[0] % 2 === 0));
+    insertTableCelArray('entries-col', entry[1].inputs, (entry[0] % 2 === 0));
+    compareAndInsertCelArray( entry[1].expected_outputs, entry[1].obtained_outputs, (entry[0] % 2 === 0))
   });
 
   //Definindo tamanho padrão para todas as celulas
@@ -69,8 +69,8 @@ function mountTestComparationTable() {
     cels.css("width", maxWidth);
 }
 
-function insertTableCel(el_id, text) {
-  $(`#${el_id}`).append("<div class='table-cel'>" + text + "</div>");
+function insertTableCel(el_id, text, isDark) {
+  $(`#${el_id}`).append(`<div class='table-cel ${isDark ? 'dark' : ''}'>` + text + "</div>");
 }
 
 function insertSubHeadCelArray(el_id, range) {
@@ -82,25 +82,25 @@ function insertSubHeadCelArray(el_id, range) {
   $(`#${el_id}`).append(arrCels);
 }
 
-function compareAndInsertCelArray(expected_outputs, obtained_outputs) {
+function compareAndInsertCelArray(expected_outputs, obtained_outputs, isDark) {
   for (let i = 0; i < obtained_outputs.length; i++) {
     if(expected_outputs[i] !== obtained_outputs[i]) {
       obtained_outputs[i] += ' error';
     }
   }
-  insertTableCelArray('expected-output-col', expected_outputs);
-  insertTableCelArray('output-col', obtained_outputs);
+  insertTableCelArray('expected-output-col', expected_outputs, isDark);
+  insertTableCelArray('output-col', obtained_outputs, isDark);
 
 }
 
-function insertTableCelArray(el_id, arr) {
+function insertTableCelArray(el_id, arr, isDark) {
   let arrCels = "<div class='d-flex align-items-center'>";
   for (let i = 0; i < arr.length; i++) {
     hasError = String(arr[i]).includes('error');
     if(hasError) {
       arr[i] = arr[i].replace('error', '');
     }
-    arrCels += `<div class="table-cel ${hasError ? 'error' : '' }">` + arr[i] + "</div>"
+    arrCels += `<div class="table-cel ${hasError ? 'error' : ''} ${isDark ? 'dark' : ''}">` + arr[i] + "</div>"
   }
   arrCels += '</div>';
   $(`#${el_id}`).append(arrCels);
