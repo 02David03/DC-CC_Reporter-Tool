@@ -7,6 +7,7 @@ const tests = json_data.test_results;
 //Call mount functions
 mountWarningList();
 mountAnalysesGRN0();
+setComponentListHeight()
 mountComponentList();
 mountTestComparationTable();
 
@@ -37,9 +38,23 @@ function mountAnalysesGRN0() {
   mountCouplingGridGraph("GRN0-grid-graph", "GRN0-info-box", couplingSUT);
 }
 
-function mountComponentList() {
-
+function setComponentListHeight() {
+  $('#components-col').css("height", $('#GRN0-col').css("height"));
 }
+
+function mountComponentList(componentsArr = components) {
+  $('#components-list').children().remove();
+  componentsArr.forEach(component => {
+    $('#components-list').append("<a href='#'>" + component.name + "</a>");
+  });
+}
+
+$(document).on('input', '#component-filter', function() {
+  let value = $(this).val();
+  let filteredComponents = components.filter(component => component.name.includes(value));
+  mountComponentList(filteredComponents);
+});
+
 
 function mountTestComparationTable() {
   //Add Subheaders
@@ -55,7 +70,7 @@ function mountTestComparationTable() {
     compareAndInsertCelArray( entry[1].expected_outputs, entry[1].obtained_outputs, (entry[0] % 2 === 0))
   });
 
-  //Definindo tamanho padrão para todas as celulas
+  //Defining width pattern to all cels
   let cels = $(".subhead-table-cel, .table-cel").not("#test-col *");
 
   let maxWidth = 54;

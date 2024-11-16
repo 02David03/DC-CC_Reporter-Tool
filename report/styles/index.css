@@ -28,6 +28,27 @@ header {
   background-color: white;
 }
 
+a {
+  text-decoration: none !important;
+  color: var(--primary-color) !important;
+  font-family: var(--font-secondary);
+  font-weight: 500;
+  font-size: 18px;
+}
+
+input {
+  font-family: var(--font-secondary) !important;
+  color: var(--gray-color);
+  border-radius: 8px;
+  border: 2px solid var(--gray-lighter-color);
+  padding: 8px;
+}
+
+input:focus-visible {
+  border-color: var(--gray-color);
+  outline: unset;
+}
+
 /* Typography */
 h1 {
   color: var(--primary-color);
@@ -54,7 +75,7 @@ h2 {
 .content-box {
   background-color: white;
   border-radius: 8px;
-  padding: 16px;
+  padding: 16px 24px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 6px 0 rgba(199, 199, 199, 0.19);
 }
 

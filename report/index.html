@@ -44,9 +44,9 @@
         </div>
       </div>
 
-      <!-- SUT coupling Analyses -->
       <div class="row my-4">
-        <div class="col-6 py-3">
+        <!-- SUT coupling Analyses -->
+        <div id="GRN0-col" class="col-6 py-3">
           <div class="content-box d-flex align-items-center flex-column">
             <!-- Donut Graph -->
             <h2 class="mb-4"> Acoplamento do SUT </h2>
@@ -70,14 +70,19 @@
           </div>
         </div>
 
-        <div class="col-6 py-3">
-          <div class="content-box d-flex align-items-center flex-column h-100">
-            <!-- Donut Graph -->
-            <h2 class="mb-4"> Componentes do SUT </h2>
+        <!-- Components List -->
+        <div id="components-col" class="col-6 py-3">
+          <div class="content-box d-flex align-items-center position-relative overflow-hidden h-100 flex-column">
+            <h2 class="mb-3"> Cobertura de componentes </h2>
+            <input id="component-filter" class="ms-auto w-75 my-3" placeholder="Filtrar componentes" type="text">
+            <div id="components-list" class="d-flex flex-wrap flex-column gap-2 align-items-start h-100 overflow-auto w-100">
+
+            </div>
             <a class="ms-auto mt-auto mt-2" href=""> Ver mais</a>
           </div>
         </div>
 
+        <!-- Test Comparation Table -->
         <div class="col-12 py-3">
           <div class="content-box d-flex align-items-center flex-column">
             <h2 class="mb-4"> Resultados dos testes </h2>
@@ -108,12 +113,9 @@
                 </div>
               </div>
             </div>
-
           </div>
         </div>
       </div>
-
-
     </main>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
