@@ -16,7 +16,7 @@
 
   <body>
     <!-- Header -->
-    <header class="d-flex justify-content-between px-5 my-2 gap-3 ">
+    <header class="d-flex justify-content-between px-5 py-2 gap-3 ">
       <div>
         <img src="./assets/ufpe-logo.svg" width="124px" alt="logo ufpe">
         <img src="./assets/cin-logo.svg" width="80px" alt="logo cin">
@@ -46,7 +46,7 @@
 
       <!-- SUT coupling Analyses -->
       <div class="row my-4">
-        <div class="col-6">
+        <div class="col-6 py-3">
           <div class="content-box d-flex align-items-center flex-column">
             <!-- Donut Graph -->
             <h2 class="mb-4"> Acoplamento do SUT </h2>
@@ -67,6 +67,52 @@
             <span id="GRN0-info-box" class="info-box"></span>
 
             <a class="ms-auto mt-2" href=""> Ver mais</a>
+          </div>
+        </div>
+
+        <div class="col-6 py-3">
+          <div class="content-box d-flex align-items-center flex-column h-100">
+            <!-- Donut Graph -->
+            <h2 class="mb-4"> Componentes do SUT </h2>
+            <a class="ms-auto mt-auto mt-2" href=""> Ver mais</a>
+          </div>
+        </div>
+
+        <div class="col-12 py-3">
+          <div class="content-box d-flex align-items-center flex-column">
+            <h2 class="mb-4"> Resultados dos testes </h2>
+            <!-- Table -->
+            <div id="test-table" class="d-flex gap-3 px-3">
+              <div id="test-col">
+                <div class="head-table-cel">
+                  Teste
+                </div>
+
+                <div class="subhead-table-cel" style="opacity: 0;" > #1 </div>
+
+              </div>
+
+              <div id="entries-col">
+                <div class="head-table-cel">
+                  Entradas
+                </div>
+
+                <div></div>
+              </div>
+
+              <div id="expected-output-col">
+                <div class="head-table-cel">
+                  Saídas esperadas
+                </div>
+              </div>
+              
+              <div id="output-col">
+                <div class="head-table-cel">
+                  Saídas Obtidas
+                </div>
+              </div>
+
+            </div>
           </div>
         </div>
       </div>

@@ -7,8 +7,10 @@
   --warning-color:  #BF6A02;
   --dark-blue-color: #0a1a5c;
   --dark-white-color: #f3f3f3;
+  --gray-lighter-color:  #c0c0c0;
   --gray-color: #6E6E6E;
   --black-color: #1a1c1d;
+  --error-bg-color: #ac0c0c85;
   --warning-bg-color-lighter: #f7df9fbd;
   --warning-bg-color:  #f8b1188f;
 
@@ -21,6 +23,9 @@ body {
   background-color: var(--dark-white-color) !important;
 }
 
+header {
+  background-color: white;
+}
 
 /* Typography */
 h1 {
@@ -49,7 +54,7 @@ h2 {
   background-color: white;
   border-radius: 8px;
   padding: 16px;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 6px 0 rgba(199, 199, 199, 0.19);
 }
 
 
@@ -118,4 +123,62 @@ h2 {
   border-radius: 4px;
   font-size: 14px;
   font-family: var(--font-secondary);
+}
+
+/* Comparation Table */
+
+#test-table {
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.head-table-cel {
+  padding: 8px 16px;
+  font-size: 22px;
+  border-radius: 4px;
+  font-family: var(--font-primary);
+  font-weight: 500;
+  text-align: center;
+  color: white;
+  background-color: var(--dark-blue-color);
+  margin-bottom: 12px;
+}
+
+.subhead-table-cel {
+  padding: 6px 12px;
+  font-size: 20px;
+  border-radius: 4px;
+  text-align: center;
+  font-family: var(--font-primary);
+  font-weight: 400;
+  min-width: 54px;
+  color: white;
+  background-color: var(--primary-color);
+  margin-bottom: 8px;
+  margin-right: 2px;
+}
+
+.table-cel {
+  padding: 4px 8px;
+  font-size: 18px;
+  border-radius: 2px;
+  text-align: center;
+  font-family: var(--font-secondary);
+  font-weight: 400;
+  min-width: 54px;
+  margin-bottom: 2px;
+  margin-right: 2px;
+  color: var(--black-color);
+  background-color: var(--gray-lighter-color);
+}
+
+.table-cel.error {
+  background-color: var(--error-bg-color);
+}
+
+#test-col .table-cel {
+  background-color: var(--gray-color);
+  color: white;
 }

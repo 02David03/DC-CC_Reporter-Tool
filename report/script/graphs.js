@@ -151,7 +151,6 @@ function drawCouplingPoints(canvas, ctx, infoBox, dotRadius, padding, entries, o
           const rect = canvas.getBoundingClientRect();
           const mouseX = event.clientX - rect.left;
           const mouseY = event.clientY - rect.top;
-          console.log(event);
           if (Math.hypot(mouseX - x, mouseY - y) < dotRadius) {
             // Exibir tooltip com valores de acoplamento
             infoBox.style.display = 'block';

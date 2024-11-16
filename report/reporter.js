@@ -22,57 +22,75 @@ const json_data = {
   "test_results": {
     "0": {
       "timestamp": 1731536734,
-      "inputs": [45, 46, 50, 1, 8, 9],
-      "expected_outputs": [8, 1, 30, 0, 50],
-      "obtained_outputs": [8, 1, 30, 0, 50]
+      "inputs": [45.0, 46, 50.2, 1, 8, 9.1],
+      "expected_outputs": [8.0, 1, 30.5, 0, 50],
+      "obtained_outputs": [8.0, 1, 30.5, 0, 50]
     },
     "1": {
       "timestamp": 1731536735,
-      "inputs": [44, 46, 50, 1, 8, 9], 
-      "expected_outputs": [8, 1, 30, 0, 50],
-      "obtained_outputs": [8, 1, 30, 0, 49]
+      "inputs": [44.5, 46.2, 50, 1, 8.1, 9],
+      "expected_outputs": [8, 1, 30, 0, 50.3],
+      "obtained_outputs": [8, 1, 30, 0, 49.9]
     },
     "2": {
       "timestamp": 1731536736,
-      "inputs": [45, 46, 50, 2, 8, 9],
-      "expected_outputs": [8, 1, 30, 0, 50],
-      "obtained_outputs": [8, 2, 30, 0, 50]
+      "inputs": [45, 46, 50.5, 2, 8, 9.7],
+      "expected_outputs": [8, 1.5, 30, 0, 50],
+      "obtained_outputs": [8, 1.7, 30, 0, 50]
     },
     "3": {
       "timestamp": 1731536737,
-      "inputs": [45, 46, 51, 1, 8, 9],
-      "expected_outputs": [8, 1, 30, 0, 50],
-      "obtained_outputs": [8, 1, 30, 1, 50]
+      "inputs": [45, 46.1, 51, 1, 8, 9.3],
+      "expected_outputs": [8.2, 1, 30, 0, 50],
+      "obtained_outputs": [8.2, 1, 30, 1, 50]
     },
     "4": {
       "timestamp": 1731536738,
-      "inputs": [45, 46, 50, 1, 7, 9], 
+      "inputs": [45, 46, 50, 1, 7.9, 9],
       "expected_outputs": [8, 1, 30, 0, 50],
       "obtained_outputs": [8, 1, 30, 0, 50]
     },
     "5": {
       "timestamp": 1731536739,
-      "inputs": [45, 47, 50, 1, 8, 9],
-      "expected_outputs": [8, 1, 30, 0, 50],
-      "obtained_outputs": [8, 1, 30, 0, 51]
+      "inputs": [45, 47.3, 50, 1, 8, 9],
+      "expected_outputs": [8, 1, 30, 0.1, 50],
+      "obtained_outputs": [8, 1, 30, 0.1, 51.2]
     },
     "6": {
       "timestamp": 1731536740,
-      "inputs": [45, 46, 50, 1, 8, 10], 
-      "expected_outputs": [8, 1, 30, 0, 50],
-      "obtained_outputs": [7, 1, 30, 0, 50]
+      "inputs": [45, 46, 50, 1.2, 8, 10],
+      "expected_outputs": [7.8, 1, 30, 0, 50.5],
+      "obtained_outputs": [7.7, 1, 30, 0, 50.5]
     },
     "7": {
       "timestamp": 1731536741,
-      "inputs": [43, 46, 50, 1, 8, 9],
+      "inputs": [43.9, 46, 50, 1, 8, 9],
       "expected_outputs": [8, 1, 30, 0, 50],
       "obtained_outputs": [8, 1, 30, 0, 50]
     },
     "8": {
       "timestamp": 1731536742,
       "inputs": [45, 46, 52, 1, 8, 9],
+      "expected_outputs": [8, 1, 30, 0.3, 50],
+      "obtained_outputs": [8, 1, 29.8, 0.3, 50]
+    },
+    "9": {
+      "timestamp": 1731536742,
+      "inputs": [45, 46, 52.7, 1, 8, 9],
       "expected_outputs": [8, 1, 30, 0, 50],
-      "obtained_outputs": [8, 1, 29, 0, 50]
+      "obtained_outputs": [8, 1, 29.9, 0, 50]
+    },
+    "10": {
+      "timestamp": 1731536742,
+      "inputs": [45.3, 46, 52, 1, 8, 9],
+      "expected_outputs": [8, 1.2, 30, 0, 50],
+      "obtained_outputs": [8, 1.2, 29.9, 0, 50]
+    },
+    "11": {
+      "timestamp": 1731536742,
+      "inputs": [45, 46, 52, 1, 8.4, 9.5],
+      "expected_outputs": [8, 1, 30, 0, 50.1],
+      "obtained_outputs": [8, 1, 29.9, 0, 50.1]
     }
   },
   "components": [
