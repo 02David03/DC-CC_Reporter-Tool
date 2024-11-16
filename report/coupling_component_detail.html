@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title> Detalhes de componentes </title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="./styles/index.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+  </head>
+
+  <body>
+    <!-- Header -->
+    <header class="d-flex justify-content-between px-5 py-2 gap-3 ">
+      <div>
+        <img src="./assets/ufpe-logo.svg" width="124px" alt="logo ufpe">
+        <img src="./assets/cin-logo.svg" width="80px" alt="logo cin">
+      </div>
+      <img src="./assets/embraer-logo.svg" width="208px" alt="logo embraer">
+    </header>
+
+    <main id="grn0-detail-main" class="container mt-4">
+      <h1 class="text-center"> Análise DCCC dos componentes do SUT</h1>
+      <a class="fs-20px" href="index.html"> &lt Voltar </a>
+
+      <div class="accordion info mt-3" id="accordionExample">
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingOne">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-one" aria-expanded="true" aria-controls="collapse-one">
+              <img class="me-3" src="./assets/info.svg" width="44px" alt="atenção">
+              Informações úteis sobre o conteúdo da análise
+            </button>
+          </h2>
+          <div id="collapse-one" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+              <ul class="gap-2 d-flex flex-column my-2" id="info-list">
+                <li> A existência de circulos azuis no gráfico de grade representa acoplamento entre entrada e saída respectiva ao ponto de encontro. Ao passar o mouse pelo ponto é possível identificar os valores que a saída do componente causaram acoplamento</li>
+                <li> A ausência de alguma saída do SUT tanto no gráfico de grade de acoplamentos quanto na tabela de análise de acoplamento significa que não foi identificado acoplamento para essa saída</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row my-4">
+        <div id="GRN1-col" class="col-6 py-3">
+          <div class="content-box d-flex align-items-center flex-column">
+            <h2 class="add-component-name text-center mb-4"> Acoplamentos do componente  </h2>
+            <!-- Grid Graph -->
+            <canvas id="GRN1-grid-graph" width="350" height="350"></canvas>
+            <span id="GRN1-info-box" class="info-box"></span>
+
+            <!-- Donut Graph -->
+            <canvas id="GRN1-donut-graph" width="300" height="300"></canvas>
+            <span id="GRN1-tooltip" class="tooltip-graph"></span>
+            <div id="coupling-graph-legend" class="d-flex flex-column mt-2">
+              <div class="d-flex gap-2 align-items-center">
+                <span class="sm-circle dark-blue-bg"></span>
+                <span>Acoplado</span>
+              </div>
+              <div class="d-flex gap-2 align-items-center">
+                <span class="sm-circle gray-bg"></span>
+                <span>Acoplamento não identificado</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="components-col" class="col-6 py-3">
+          <div class="content-box d-flex align-items-center position-relative overflow-hidden h-100 flex-column">
+            <h2 class="mb-3"> Listagem de componentes </h2>
+            <input id="component-filter" class="ms-auto w-75 my-3" placeholder="Filtrar componentes" type="text">
+            <div id="components-list" class="d-flex flex-wrap flex-column gap-2 align-items-start h-100 overflow-auto w-100">
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 py-3">
+          <div class="content-box d-flex align-items-center h-100 flex-column">
+            <!-- Table -->
+            <h2 class="mb-4 text-center add-component-name"> Tabela de análise de acoplamentos do componente </h2>
+
+            <div id="component-table" class="d-flex justify-content-center table-responsive gap-3 px-3">
+              <div id="comp-outputs-col">
+                <div class="head-table-cel">
+                  Saídas do componente
+                </div>
+                <div class="subhead-table-cel" style="opacity: 0;" > #1 </div>
+              </div>
+
+              <div id="sut-outputs-col">
+                <div class="head-table-cel">
+                  Saídas do SUT
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+    <script src="./reporter.js" defer></script>
+    <script src="./script/graphs.js" defer></script>
+    <script src="./script/coupling_component_detail.js" defer></script>
+  </body>
+</html>

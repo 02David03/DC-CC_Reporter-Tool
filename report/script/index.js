@@ -3,6 +3,7 @@ const warnings = json_data.warnings;
 const couplingSUT = json_data.coupling_SUT;
 const components = json_data.components;
 const tests = json_data.test_results;
+let componentSelected = 0;
 
 //Call mount functions
 mountWarningList();
@@ -44,9 +45,13 @@ function setComponentListHeight() {
 
 function mountComponentList(componentsArr = components) {
   $('#components-list').children().remove();
-  componentsArr.forEach(component => {
-    $('#components-list').append("<a href='#'>" + component.name + "</a>");
+  componentsArr.forEach((component, index) => {
+    $('#components-list').append(`<a href='coupling_component_detail.html?component=${index}'>` + component.name + "</a>");
   });
+}
+
+function selectComponent(index) {
+  componentSelected = index;
 }
 
 $(document).on('input', '#component-filter', function() {
@@ -91,7 +96,7 @@ function insertTableCel(el_id, text, isDark) {
 function insertSubHeadCelArray(el_id, range) {
   let arrCels = "<div class='d-flex align-items-center'>";
   for (let i = 0; i < range; i++) {
-    arrCels += "<div class='subhead-table-cel'> #" + (i + 1) + "</div>"
+    arrCels += "<div class='subhead-table-cel w-100'> #" + (i + 1) + "</div>"
   }
   arrCels += '</div>';
   $(`#${el_id}`).append(arrCels);

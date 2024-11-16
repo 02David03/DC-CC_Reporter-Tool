@@ -4,23 +4,19 @@ function mountCouplingDonutGraph(canva_id, tooltip_id, data) {
   const ctx = canvas.getContext("2d");
 
   const labels = ["Entradas acopladas", "Entradas não identificaveis"];
-  const colors = ["#0a1a5c", "#6E6E6E"]; // Cores
-  const total = data.reduce((acc, val) => acc + val, 0); // Soma dos valores
+  const colors = ["#0a1a5c", "#6E6E6E"];
+  const total = data.reduce((acc, val) => acc + val, 0);
   
-  // Configurações do gráfico
   const centerX = canvas.width / 2;
   const centerY = canvas.height / 2;
   const radius = canvas.width / 2;
   const innerRadius = canvas.width / 4;
 
-  // Variável para acompanhar o ângulo atual
-  let startAngle = 0.5 * Math.PI; // Início no eixo Y (90 graus)
+  let startAngle = 0.5 * Math.PI; 
 
   data.forEach((value, index) => {
-    // Calcula o ângulo final
     const sliceAngle = (value / total) * 2 * Math.PI;
   
-    // Desenha o arco (parte do donut)
     ctx.beginPath();
     ctx.moveTo(centerX, centerY);
     ctx.arc(centerX, centerY, radius, startAngle, startAngle + sliceAngle);
@@ -28,14 +24,12 @@ function mountCouplingDonutGraph(canva_id, tooltip_id, data) {
     ctx.fillStyle = colors[index];
     ctx.fill();
   
-    // Atualiza o ângulo inicial
     startAngle += sliceAngle;
   });
   
-  // Desenha o círculo interno para criar o "furo"
   ctx.beginPath();
   ctx.arc(centerX, centerY, innerRadius, 0, 2 * Math.PI);
-  ctx.fillStyle = "#ffffff"; // Cor do círculo interno (fundo)
+  ctx.fillStyle = "#ffffff"; 
   ctx.fill();
 
 
@@ -51,18 +45,15 @@ function mountCouplingDonutGraph(canva_id, tooltip_id, data) {
     const distance = Math.sqrt(dx * dx + dy * dy);
   
     if (distance >= innerRadius && distance <= radius) {
-      // Calcula o ângulo do mouse
       let angle = Math.atan2(dy, dx);
       if (angle < 0.5 * Math.PI) {
-        angle += 2 * Math.PI; // Ajusta para o intervalo de [0, 2PI]
+        angle += 2 * Math.PI; 
       }
   
-      // Determina qual fatia está sendo "hovered"
       let currentAngle = 0.5 * Math.PI;
       for (let i = 0; i < data.length; i++) {
         const sliceAngle = (data[i] / total) * 2 * Math.PI;
         if (angle >= currentAngle && angle < currentAngle + sliceAngle) {
-           // Atualiza o conteúdo e posição do tooltip
             tooltip.style.display = "block";
             tooltip.style.left = `${event.layerX + 10}px`;
             tooltip.style.top = `${event.layerY + 10}px`;
@@ -75,38 +66,34 @@ function mountCouplingDonutGraph(canva_id, tooltip_id, data) {
         currentAngle += sliceAngle;
       }
     } else {
-      tooltip.style.display = "none"; // Esconde o tooltip quando fora do gráfico
+      tooltip.style.display = "none"; 
     }
   });
 
-  // Esconde o tooltip quando o mouse sai do canvas
   canvas.addEventListener("mouseleave", () => {
     tooltip.style.display = "none";
   });
 }
 
-function mountCouplingGridGraph(canva_id, info_box_id, data) {
+function mountCouplingGridGraph(canva_id, info_box_id, data, isComponent = false) {
   const canvas = document.getElementById(canva_id);
   const ctx = canvas.getContext('2d');
   const infoBox = document.getElementById(info_box_id);
   const dotRadius = 5;
   const padding = 40;
 
-  // Organizar dados para obter listas ordenadas de entradas e saídas
   const entries = Object.keys(data).map(Number).sort((a, b) => a - b);
   const outputs = [...new Set(Object.values(data).flatMap(obj => Object.keys(obj).map(Number)))].sort((a, b) => a - b);
 
-  drawGrid(canvas, ctx, entries, outputs, padding);
+  drawGrid(canvas, ctx, entries, outputs, padding, isComponent);
   drawCouplingPoints(canvas, ctx, infoBox, dotRadius, padding, entries, outputs, data);
 }
 
-// Função para desenhar a grade
-function drawGrid(canvas, ctx, entries, outputs, padding) {
+function drawGrid(canvas, ctx, entries, outputs, padding, isComponent) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   
-  // Desenhar linhas pontilhadas e rótulos nos eixos
   for (let i = 0; i < entries.length; i++) {
-    let y = padding + i * (canvas.height - padding * 2) / (entries.length - 1);
+    let y = padding + i * (canvas.height - padding * 2) / ((entries.length === 1 ? 2 : entries.length) - 1);
     ctx.strokeStyle = '#ccc';
     ctx.setLineDash([5, 5]);
     ctx.beginPath();
@@ -117,12 +104,12 @@ function drawGrid(canvas, ctx, entries, outputs, padding) {
     ctx.fillStyle = '#000';
     ctx.fillText(entries[i], padding - 20, y + 3);
     if(i === 0) {
-      ctx.fillText('Entradas', padding - 25, y - 20);
+      ctx.fillText((isComponent ? 'Saídas do Componente' : 'Entradas'), padding - 25, y - 20);
     }
   }
 
   for (let j = 0; j < outputs.length; j++) {
-    let x = padding + j * (canvas.width - padding * 2) / (outputs.length - 1);
+    let x = padding + j * (canvas.width - padding * 2) / ((outputs.length === 1 ? 2 : outputs.length) - 1);
     ctx.beginPath();
     ctx.moveTo(x, padding);
     ctx.lineTo(x, canvas.height - padding);
@@ -136,29 +123,25 @@ function drawGrid(canvas, ctx, entries, outputs, padding) {
   }
 }
 
-// Função para desenhar pontos de acoplamento
 function drawCouplingPoints(canvas, ctx, infoBox, dotRadius, padding, entries, outputs, data) {
   for (let i = 0; i < entries.length; i++) {
     const entry = entries[i];
     for (let j = 0; j < outputs.length; j++) {
       const output = outputs[j];
-
       if (data[entry] && data[entry][output]) {
-        let x = padding + j * (canvas.width - padding * 2) / (outputs.length - 1);
-        let y = padding + i * (canvas.height - padding * 2) / (entries.length - 1);
+        let x = padding + j * (canvas.width - padding * 2) / ((outputs.length === 1 ? 2 : outputs.length) - 1);
+        let y = padding + i * (canvas.height - padding * 2) / ((entries.length === 1 ? 2 : entries.length) - 1);
 
         ctx.beginPath();
         ctx.arc(x, y, dotRadius, 0, 2 * Math.PI);
         ctx.fillStyle = '#0067B1';
         ctx.fill();
-
-        // Adicionar dados ao ponto para interatividade
+        
         canvas.addEventListener('mousemove', (event) => {
           const rect = canvas.getBoundingClientRect();
           const mouseX = event.clientX - rect.left;
           const mouseY = event.clientY - rect.top;
           if (Math.hypot(mouseX - x, mouseY - y) < dotRadius) {
-            // Exibir tooltip com valores de acoplamento
             infoBox.style.display = 'block';
             infoBox.style.left = `${event.layerX + 10}px`;
             infoBox.style.top = `${event.layerY+ 10}px`;

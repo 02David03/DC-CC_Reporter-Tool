@@ -54,7 +54,7 @@ function insertInputsCelCol() {
 function insertOutputsSubHeadCelArray(arr) {
   let arrCels = "<div class='d-flex align-items-center'>";
   for (let i = 0; i < arr.length; i++) {
-    arrCels += "<div class='subhead-table-cel'> #" + arr[i] + "</div>"
+    arrCels += "<div class='subhead-table-cel w-100'> #" + arr[i] + "</div>"
   }
   arrCels += '</div>';
   $(`#output-col`).append(arrCels);
@@ -63,9 +63,7 @@ function insertOutputsSubHeadCelArray(arr) {
 function insertOutputsTableCelArray(outputs) {
   Object.entries(couplingSUT).forEach(entry => {
     let arrCels = "<div class='d-flex align-items-center'>";
-    console.log(entry[1]);
     for (let i = 0; i < outputs.length; i++) {
-      console.log(entry[1][outputs[i]]);
       if(entry[1][outputs[i]]) {
         arrCels += `<div class="table-cel coupled">` + entry[1][outputs[i]] + "</div>";
       } else {

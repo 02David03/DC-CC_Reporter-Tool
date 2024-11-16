@@ -29,12 +29,13 @@ header {
   background-color: white;
 }
 
-a {
+a, .fake-link {
   text-decoration: none !important;
   color: var(--primary-color) !important;
   font-family: var(--font-secondary);
   font-weight: 500;
   font-size: 18px;
+  cursor: pointer;
 }
 
 input {
@@ -159,7 +160,7 @@ h2 {
 
 /* Comparation Table */
 
-#test-table {
+.table-responsive {
   overflow-x: auto;
   overflow-y: hidden;
   white-space: nowrap;
