@@ -132,11 +132,11 @@ class CTransformer:
 
     "transformation" can be an AST node visitor.
     """
-    def __init__ (self, transformation):
-        self.transformation = transformation
+    def __init__ (self, transformations):
+        self.transformations = transformations
 
     """
-    The file of parameter "filename" can be before preprocessing.
+    The file of parameter "filepath" can be before preprocessing.
     It can contains directives.
     """
     def transform (self, filepath):
@@ -168,11 +168,12 @@ class CTransformer:
         ast_b = parser.parse('\n'.join(included_headers_srcs))
 
         ast_delete(ast_a, ast_b)
-        self.transformation.visit(ast_a)
+        for transformation in self.transformations:
+            transformation.visit(ast_a)
 
         contents =  '%s\n\n%s' % (
             ''.join(included_headers),
-            c_generator.CGenerator().visit(ast_a)
+            c_generator.CGenerator(True).visit(ast_a)
         )
 
         return contents
