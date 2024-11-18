@@ -5,19 +5,19 @@ from param_helpers import is_output_param, convert_string
 from elicitation_instrumentation import DELIMITER
 
 
-TestResultEntry = collections.namedtuple('TestResultEntry', [
+TestResultEntry = collections.namedtuple('TestResultEntry', (
     'inputs',
     'outputs',
     'components_inputs',
     'components_outputs'
-])
+))
 
-TestFailureEntry = collections.namedtuple('TestFailureEntry', [
+TestFailureEntry = collections.namedtuple('TestFailureEntry', (
     'test_number',
     'param_name',
     'expected_value',
     'actual_value'
-])
+))
 
 INSTRUMENTATION_REGEX = re.compile(DELIMITER + r'(\w+)\.(in|out)')
 

@@ -9,6 +9,7 @@ from test_results import TestResults
 from test_driver import test_c_function
 from dc_cc_analyzer import analyze_dc_cc
 from c_function import CFunction
+from reports import report_test_results_in_terminal, report_analysis_results_in_terminal
 
 arg_parser = argparse.ArgumentParser(
     description="Instrument and test C functions"
@@ -82,20 +83,11 @@ if opts.test:
     c_function = CFunction(c_library_path, opts.sut, sut_def)
 
     test_c_function(c_function, sut_def, test_results, opts.test_csv, compare)
+    report_test_results_in_terminal(test_results)
 
-    if not len(test_results.failed_tests):
-        print('All tests successful.')
-
-    previous_test_number = None
-    for failure in test_results.failed_tests:
-        if previous_test_number != failure.test_number:
-            print(f'Test #{failure.test_number} failed')
-
-        print(f'Expected {failure.param_name}={failure.expected_value}'
-                + f' got {failure.param_name}={failure.actual_value}')
-        previous_test_number = failure.test_number
 
     if opts.analyze:
         component_defs = copy.deepcopy(function_defs)
         component_defs.pop(opts.sut)
-        analyze_dc_cc(test_results, c_function, component_defs, compare)
+        analysis_results = analyze_dc_cc(test_results, c_function, component_defs, compare)
+        report_analysis_results_in_terminal(analysis_results)
