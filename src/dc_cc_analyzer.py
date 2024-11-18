@@ -2,8 +2,9 @@ from itertools import combinations, starmap
 
 from param_helpers import is_output_param
 
-def analyze_dc_cc (test_results, component_defs, compare):
-    all_input_param_names = set(test_results.input_names)
+
+def analyze_dc_cc (test_results, c_function, component_defs, compare):
+    all_input_param_names = set(c_function.input_names)
     all_component_output_params = {}
     successful_input_params = set()
     problematic_input_params = set()
@@ -42,8 +43,8 @@ def analyze_dc_cc (test_results, component_defs, compare):
             if not compare(inputs_a[j], inputs_b[j]):
                 varied_inputs_count += 1
                 variation_msg = '(%s ⇔ %s)' % (inputs_a[j], inputs_b[j])
-                varied_input_msg = test_results.input_names[j] + variation_msg
-                varied_input_name = test_results.input_names[j]
+                varied_input_msg = c_function.input_names[j] + variation_msg
+                varied_input_name = c_function.input_names[j]
                 
 
         if varied_inputs_count == 1:

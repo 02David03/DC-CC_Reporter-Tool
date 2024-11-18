@@ -14,3 +14,11 @@ def create_param_value_comparator (precision):
             return a == b
 
     return compare
+
+def convert_string (string, param_type):
+    if param_type in ('int'):
+        return int(string)
+    elif param_type in ('float', 'double'):
+        return float(string)
+    else:
+        return string

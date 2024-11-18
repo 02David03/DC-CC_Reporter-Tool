@@ -5,8 +5,10 @@ import copy
 
 import instrument
 from param_helpers import create_param_value_comparator
+from test_results import TestResults
 from test_driver import test_c_function
 from dc_cc_analyzer import analyze_dc_cc
+from c_function import CFunction
 
 arg_parser = argparse.ArgumentParser(
     description="Instrument and test C functions"
@@ -76,9 +78,24 @@ if opts.test:
 
     compare = create_param_value_comparator(opts.precision)
 
-    test_results = test_c_function(opts.sut, c_library_path, function_defs, opts.test_csv, compare, opts.analyze)
+    test_results = TestResults(function_defs)
+    c_function = CFunction(c_library_path, opts.sut, sut_def)
+
+    test_c_function(c_function, sut_def, test_results, opts.test_csv, compare)
+
+    if not len(test_results.failed_tests):
+        print('All tests successful.')
+
+    previous_test_number = None
+    for failure in test_results.failed_tests:
+        if previous_test_number != failure.test_number:
+            print(f'Test #{failure.test_number} failed')
+
+        print(f'Expected {failure.param_name}={failure.expected_value}'
+                + f' got {failure.param_name}={failure.actual_value}')
+        previous_test_number = failure.test_number
 
     if opts.analyze:
         component_defs = copy.deepcopy(function_defs)
         component_defs.pop(opts.sut)
-        analyze_dc_cc(test_results, component_defs, compare)
+        analyze_dc_cc(test_results, c_function, component_defs, compare)
