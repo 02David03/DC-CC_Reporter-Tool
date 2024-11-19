@@ -47,6 +47,7 @@ def _instrument (transformations, source_dir, output_dir):
         # ensure printf is defined even if the source to instrument
         # does not include <stdio.h>
         output_file.write('int printf(const char * format, ...);\n')
+        print(c_transformed)
         output_file.write(c_transformed)
         output_file.close()
         

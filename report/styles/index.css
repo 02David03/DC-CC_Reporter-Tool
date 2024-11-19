@@ -74,6 +74,14 @@ h2 {
   background-color: var(--gray-color);
 }
 
+.warning-bg {
+  background-color: var(--warning-color);
+}
+
+.fc-error {
+  color: var(--error-bg-color);
+}
+
 .content-box {
   background-color: white;
   border-radius: 8px;
@@ -124,6 +132,7 @@ h2 {
 
 #coupling-graph-legend {
   display: flex;
+  flex-direction: column;
   font-size: 18px;
   gap: 8px;
   padding: 8px;
@@ -139,11 +148,12 @@ h2 {
   padding: 5px;
   border-radius: 4px;
   font-size: 14px;
+  z-index: 5;
 }
 
 .sm-circle {
-  width: 12px;
-  height: 12px;
+  width: 15px;
+  height: 15px;
   border-radius: 360px;
 }
 
@@ -201,6 +211,7 @@ h2 {
   font-family: var(--font-secondary);
   font-weight: 400;
   min-width: 54px;
+  min-height: 32px;
   margin-bottom: 2px;
   margin-right: 2px;
   color: var(--black-color);

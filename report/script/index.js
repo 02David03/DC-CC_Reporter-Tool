@@ -14,7 +14,7 @@ mountTestComparationTable();
 
 function mountWarningList() {
   if(warnings.length === 0) {
-    $('#warning-list').addClass('d-none');
+    $('#accordionWarning').addClass('d-none');
   } else {
     for (let i = 0; i < warnings.length; i++) {
       $('#warning-list').append("<li>" + warnings[i] + "</li>");
@@ -23,16 +23,19 @@ function mountWarningList() {
 }
 
 function mountAnalysesGRN0() {
-  let graphData = [0, 0];
+  let graphData = [0, 0, 0];
   for(const key in couplingSUT) {
     const subObj = couplingSUT[key];
-    const hasValues = Object.keys(subObj).some(
-      subKey => subObj[subKey].length > 0
-    );
+    const hasValues = Object.keys(subObj).length > 1; 
+    console.log(hasValues)
     if(hasValues) {
       graphData[0]++
-    } else{
-      graphData[1]++
+    } else {
+      if(subObj['analysed']) {
+        graphData[2]++
+      } else {
+        graphData[1]++
+      }
     }
   }
   mountCouplingDonutGraph("GRN0-donut-graph", "GRN0-tooltip", graphData);
