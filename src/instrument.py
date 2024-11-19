@@ -56,9 +56,9 @@ def _instrument (transformations, source_dir, output_dir):
     subprocess.run(compilation_command, check=True, cwd=output_dir)
 
 
-def instrument_for_elicitation (sut_function, source_dir, output_dir, selection, exclude):
+def instrument_for_elicitation (sut_function, source_dir, output_dir):
 
-    elicitation = ElicitationInstrumentation(sut_function, selection, exclude)
+    elicitation = ElicitationInstrumentation(sut_function)
     func_call_analyzer = FuncCallAnalyzer()
     transformations = [elicitation, FuncBodyVisitor(sut_function, func_call_analyzer)]
 

@@ -48,13 +48,16 @@ class ProxyAST ():
         ))
         if return_statement_node:
             printf_args_nodes.append(return_statement_node.expr)
-        intercept_instruction = c_ast.FuncCall(
-                name=c_ast.ID(name='printf'),
-                args=c_ast.ExprList(exprs=[
-                    printf_format_node,
-                    *printf_args_nodes
-                ])
-        )
+        if len(printf_args_nodes):
+            intercept_instruction = c_ast.FuncCall(
+                    name=c_ast.ID(name='printf'),
+                    args=c_ast.ExprList(exprs=[
+                        printf_format_node,
+                        *printf_args_nodes
+                    ])
+            )
+        else:
+            intercept_instruction = None
         return [delimiter_node, intercept_instruction, delimiter_node]
 
 
@@ -70,19 +73,11 @@ def expand_kcg_type (some_type):
 class ElicitationInstrumentation (c_ast.NodeVisitor):
     functions = {}
     
-    def __init__(self, sut_name, selection, exclude):
+    def __init__(self, sut_name):
         self.sut_name = sut_name
-        self.exclude = exclude
-        self.selection = selection
 
     def visit_FuncDef(self, node):
         function_name = node.decl.name
-        if self.exclude:
-            if function_name in self.selection:
-                return
-        else:
-            if not function_name in self.selection:
-                return
 
         function_arg_list = node.decl.type.args
         if not function_arg_list:
