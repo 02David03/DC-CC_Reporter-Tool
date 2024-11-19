@@ -17,5 +17,5 @@ def report_analysis_results_in_terminal (analysis_results):
     for input_name, status in analysis_results.input_params.items():
         print(input_name, status.name)
     print('\nInternal Variables Analysis\n')
-    for component_output_name, status in analysis_results.component_outputs.items():
+    for component_output_name, status in analysis_results.internal_vars.items():
         print(component_output_name, status.name)

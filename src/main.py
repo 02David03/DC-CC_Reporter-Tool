@@ -77,9 +77,7 @@ if opts.test:
 
 
     if opts.analyze:
-        component_defs = copy.deepcopy(function_defs)
-        component_defs.pop(opts.sut)
-        analyzer = Analyzer(test_results, c_function, component_defs, compare)
+        analyzer = Analyzer(test_results, c_function, compare)
         analysis_results = analyzer.analyze_dc_cc()
         report_analysis_results_in_terminal(analysis_results)
         analysis_results = analyzer.analyze_with_tricked_variables(analysis_results, opts.source_dir, opts.storage_dir)
