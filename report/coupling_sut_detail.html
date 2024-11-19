@@ -39,8 +39,7 @@
           <div id="collapse-one" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
             <div class="accordion-body">
               <ul class="gap-2 d-flex flex-column my-2" id="info-list">
-                <li> O termo "Não identificavel" pode significar que a entrada não apresentou acoplamentos durante a execução dos testes ou não houve possibilidade de analisar o acoplamento a partir da suíte de testes disponibilizada.</li>
-                <li> A existência de circulos azuis no gráfico de grade representa acoplamento entre entrada e saída respectiva ao ponto de encontro. Ao passar o mouse pelo ponto é possível identificar os valores de entrada que causaram acoplamento</li>
+                <li> A existência de circulos azuis no gráfico de grade representa acoplamento entre entrada e saída respectiva ao ponto de encontro. Ao passar o mouse pelo ponto é possível identificar as combinações de teste utilizadas para a identificação de acoplamento</li>
                 <li> A ausência de alguma saída do SUT tanto no gráfico de grade de acoplamentos quanto na tabela de análise de acoplamento significa que não foi identificado acoplamento para essa saída</li>
               </ul>
             </div>
@@ -62,10 +61,13 @@
               </div>
               <div class="d-flex gap-2 align-items-center">
                 <span class="sm-circle gray-bg"></span>
-                <span>Não identificavel</span>
+                <span>Não analisado</span>
+              </div>
+              <div class="d-flex gap-2 align-items-center">
+                <span class="sm-circle warning-bg"></span>
+                <span>Acoplamento não identificado</span>
               </div>
             </div>
-          
           </div>
         </div>
 
