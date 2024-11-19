@@ -15,7 +15,7 @@ LITERAL_TYPE_TO_FORMAT = {
     'char': '%c'
 }
 
-DELIMITER = 'ΣΣΣΣ'
+DELIMITER = '©©©©'
 
 
 class ProxyAST ():
