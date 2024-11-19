@@ -1,11 +1,13 @@
 import ctypes
+import _ctypes
+import os
 from param_helpers import is_output_param
 
 
 class CFunction ():
     def __init__ (self, c_library_path, func_name, func_def):
-        c_library = ctypes.CDLL(c_library_path)
-        c_function = getattr(c_library, func_name)
+        self._c_library_path = c_library_path
+        self.func_name = func_name
 
         self.output_idxs = []
         self.output_names = []
@@ -26,8 +28,15 @@ class CFunction ():
                     
             c_signature.append(c_type)
 
+        self._c_signature = c_signature
+        self._load()
+
+    def _load (self):
+        self._cdll = ctypes.CDLL(self._c_library_path)
+        c_function = self._cdll[self.func_name]
+
         c_function.restype = None
-        c_function.argtypes = c_signature
+        c_function.argtypes = self._c_signature
         self._c_function = c_function
 
     def run (self, *args):
@@ -42,3 +51,8 @@ class CFunction ():
 
         self._c_function(*arg_list)
         return output_variables
+    
+    def reload (self):
+        close_library = _ctypes.dlclose if os.name == 'posix' else _ctypes.FreeLibrary
+        close_library(self._cdll._handle)
+        self._load()

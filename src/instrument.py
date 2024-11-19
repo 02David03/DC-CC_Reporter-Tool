@@ -54,7 +54,6 @@ def _instrument (transformations, source_dir, output_dir):
     compilation_command = ['gcc', '-shared', '-o', LIBRARY_FILE, '-fPIC', *c_files]
 
     subprocess.run(compilation_command, check=True, cwd=output_dir)
-    print("Compilation completed.")
 
 
 def instrument_for_elicitation (sut_function, source_dir, output_dir, selection, exclude):
@@ -72,14 +71,13 @@ def instrument_for_elicitation (sut_function, source_dir, output_dir, selection,
     functions_json_file.close()
 
 
-def instrument_for_interference (sut_function, variable_name, local, bias, gain, source_dir, output_dir, selection, exclude):
-    elicitation = ElicitationInstrumentation(selection, exclude)
+def instrument_for_interference (sut_function, variable_name, local, substitute_value, source_dir, output_dir):
     if local:
         variable_strategy = LocalVariableStrategy(variable_name)
     else:
         variable_strategy = NonLocalVariableStrategy(variable_name)
-    variable_interference = VariableInstrumentation(variable_strategy, bias, gain)
-    transformations = [elicitation, FuncBodyVisitor(sut_function, variable_interference)]
+    variable_interference = VariableInstrumentation(variable_strategy, substitute_value)
+    transformations = [FuncBodyVisitor(sut_function, variable_interference)]
 
     _instrument(transformations, source_dir, output_dir)
 

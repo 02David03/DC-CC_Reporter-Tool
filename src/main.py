@@ -7,9 +7,10 @@ import instrument
 from param_helpers import create_param_value_comparator
 from test_results import TestResults
 from test_driver import test_c_function
-from dc_cc_analyzer import analyze_dc_cc
+from dc_cc_analyzer import Analyzer
 from c_function import CFunction
 from reports import report_test_results_in_terminal, report_analysis_results_in_terminal
+
 
 arg_parser = argparse.ArgumentParser(
     description="Instrument and test C functions"
@@ -89,5 +90,8 @@ if opts.test:
     if opts.analyze:
         component_defs = copy.deepcopy(function_defs)
         component_defs.pop(opts.sut)
-        analysis_results = analyze_dc_cc(test_results, c_function, component_defs, compare)
+        analyzer = Analyzer(test_results, c_function, component_defs, compare)
+        analysis_results = analyzer.analyze_dc_cc()
+        report_analysis_results_in_terminal(analysis_results)
+        analysis_results = analyzer.analyze_with_tricked_variables(analysis_results, opts.source_dir, opts.storage_dir)
         report_analysis_results_in_terminal(analysis_results)
