@@ -59,10 +59,9 @@ class NonLocalVariableStrategy (VariableStrategy):
 class VariableInstrumentation (c_ast.NodeVisitor):
     instrumented = False
 
-    def __init__ (self, variable_strategy, bias, gain):
+    def __init__ (self, variable_strategy, substitute_value):
         self.variable_strategy = variable_strategy
-        self.bias = bias
-        self.gain = gain
+        self.substitute_value = substitute_value
 
     def try_to_interfere (self, compound):
         insertion_index = None
@@ -90,15 +89,7 @@ class VariableInstrumentation (c_ast.NodeVisitor):
         interference = c_ast.Assignment(
             op='=',
             lvalue=variable_node,
-            rvalue=c_ast.BinaryOp(
-                op='+',
-                left=c_ast.BinaryOp(
-                    op='*',
-                    left=variable_node,
-                    right=c_ast.Constant(type='string',value=self.gain)
-                ),
-                right=c_ast.Constant(type='string', value=self.bias)
-            )
+            rvalue=c_ast.Constant(type='string', value=self.substitute_value)
         )
         compound.block_items.insert(insertion_index, interference)
         return True

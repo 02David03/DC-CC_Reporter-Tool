@@ -7,9 +7,10 @@ import instrument
 from param_helpers import create_param_value_comparator
 from test_results import TestResults
 from test_driver import test_c_function
-from dc_cc_analyzer import analyze_dc_cc
+from dc_cc_analyzer import Analyzer
 from c_function import CFunction
 from reports import report_test_results_in_terminal, report_analysis_results_in_terminal
+
 
 arg_parser = argparse.ArgumentParser(
     description="Instrument and test C functions"
@@ -19,11 +20,6 @@ arg_group = arg_parser.add_argument_group('Actions')
 arg_group.add_argument('-i', '--instrument', dest='source_dir', help='Instrument code and compile it')
 arg_group.add_argument('-t', '--test', action='store_true', help='Test instrumented code')
 arg_group.add_argument('-a', '--analyze', action='store_true', help='Analyze for DC|CC')
-
-arg_group = arg_parser.add_argument_group('Instrumentation options')
-exclusive_group = arg_group.add_mutually_exclusive_group()
-exclusive_group.add_argument('-f', '--functions', help='Functions to instrument')
-exclusive_group.add_argument('-F', '--except-functions', help='Functions to NOT instrument')
 
 arg_group = arg_parser.add_argument_group('Instrumentation/Test options')
 arg_group.add_argument('-s', '--storage-dir', default='output', help='Folder for instrumented code (it will be rewritten) / Source folder to test')
@@ -48,13 +44,7 @@ if opts.analyze and not opts.test:
     exit(1)
 
 if opts.source_dir:
-    selection = set()
-    if opts.functions:
-        selection.update(opts.functions.split(','))
-    if opts.except_functions:
-        selection.update(opts.except_functions.split(','))
-    exclude = not opts.functions
-    instrument.instrument_for_elicitation(opts.sut, opts.source_dir, opts.storage_dir, selection, exclude)
+    instrument.instrument_for_elicitation(opts.sut, opts.source_dir, opts.storage_dir)
 
 if opts.test:
     if not os.path.isfile(opts.test_csv):
@@ -87,7 +77,8 @@ if opts.test:
 
 
     if opts.analyze:
-        component_defs = copy.deepcopy(function_defs)
-        component_defs.pop(opts.sut)
-        analysis_results = analyze_dc_cc(test_results, c_function, component_defs, compare)
+        analyzer = Analyzer(test_results, c_function, compare)
+        analysis_results = analyzer.analyze_dc_cc()
+        report_analysis_results_in_terminal(analysis_results)
+        analysis_results = analyzer.analyze_with_tricked_variables(analysis_results, opts.source_dir, opts.storage_dir)
         report_analysis_results_in_terminal(analysis_results)

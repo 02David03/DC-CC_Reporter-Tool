@@ -8,8 +8,7 @@ from elicitation_instrumentation import DELIMITER
 TestResultEntry = collections.namedtuple('TestResultEntry', (
     'inputs',
     'outputs',
-    'components_inputs',
-    'components_outputs'
+    'internal_vars'
 ))
 
 TestFailureEntry = collections.namedtuple('TestFailureEntry', (
@@ -35,39 +34,37 @@ class TestResults:
 
     failed_tests = []
 
+    internal_vars_names = []
+
     def __init__ (self, function_defs):
         self.functions_defs = function_defs
     
     def _process_instrumented_data (self, instrumented_data):
-        components_inputs_entry = {}
-        components_outputs_entry = {}
+
+        internal_vars = {}
         for lines in zip(instrumented_data, instrumented_data[1:], instrumented_data[2:]):
             if lines[0] == lines[2] and lines[0].startswith(DELIMITER):
                 function_name, direction = INSTRUMENTATION_REGEX.match(lines[0]).groups()
                 params = lines[1].split()
                 function_def = self.functions_defs[function_name]
 
-                if direction == 'in':
-                    filter_lambda = lambda p: not is_output_param(p)
-                    entry = components_inputs_entry
-                else:
-                    filter_lambda = is_output_param
-                    entry = components_outputs_entry
-                converted_param_list = []
-                for param_def, param_value in zip(filter(filter_lambda, function_def), params):
-                    converted_param_list.append(_convert_collected_string(param_value, param_def['type']))
-                entry[function_name] = converted_param_list
+                if direction == 'out':
+                    for param_def, param_value in zip(filter(is_output_param, function_def), params):
+                        if param_def['local']:
+                            variable_name = param_def['call_name']
+                            internal_vars[variable_name] = _convert_collected_string(param_value, param_def['type'])
+                            if variable_name not in self.internal_vars_names:
+                                self.internal_vars_names.append(variable_name)
         
-        return components_inputs_entry, components_outputs_entry
+        return internal_vars
 
     
     def add (self, inputs, outputs, instrumented_data):
-        components_inputs, components_outputs = self._process_instrumented_data(instrumented_data)
+        internal_vars = self._process_instrumented_data(instrumented_data)
         self._entries.append(TestResultEntry(
             inputs,
             outputs,
-            components_inputs,
-            components_outputs
+            internal_vars
         ))
     
     def register_failure (self, test_number, param_name, expected_value, actual_value):
