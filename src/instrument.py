@@ -3,14 +3,17 @@ import shutil
 import subprocess
 import json
 
-from instrumentator import Instrumentator
+from elicitation_instrumentation import ElicitationInstrumentation
+from func_call_analyzer import FuncCallAnalyzer
+from variable_instrumentation import VariableInstrumentation, LocalVariableStrategy, NonLocalVariableStrategy
+from func_body_visitor import FuncBodyVisitor
 from c_transformer import CTransformer
 
 LIBRARY_FILE = 'libsut.so'
 
 FUNCTIONS_JSON_FILE = 'functions.json'
 
-def instrument_source (source_dir, output_dir, selection, exclude):
+def _instrument (transformations, source_dir, output_dir):
 
     c_files = list(filter(
         lambda f: f.endswith('.c'),
@@ -28,8 +31,7 @@ def instrument_source (source_dir, output_dir, selection, exclude):
         ignore=ignore_instrumented_files
     )
 
-    instrumentator = Instrumentator(selection, exclude)
-    c_transformer = CTransformer(instrumentator)
+    c_transformer = CTransformer(transformations)
     for filename in c_files:
 
         try:
@@ -47,12 +49,38 @@ def instrument_source (source_dir, output_dir, selection, exclude):
         output_file.write('int printf(const char * format, ...);\n')
         output_file.write(c_transformed)
         output_file.close()
-
-    functions_json_file = open(os.path.join(output_dir, FUNCTIONS_JSON_FILE), 'w')
-    json.dump(instrumentator.functions, functions_json_file, sort_keys=True, indent=2)
-    functions_json_file.close()
         
     compilation_command = ['gcc', '-shared', '-o', LIBRARY_FILE, '-fPIC', *c_files]
 
     subprocess.run(compilation_command, check=True, cwd=output_dir)
-    print("Compilation completed.")
+
+
+def instrument_for_elicitation (sut_function, source_dir, output_dir):
+
+    elicitation = ElicitationInstrumentation(sut_function)
+    func_call_analyzer = FuncCallAnalyzer()
+    transformations = [elicitation, FuncBodyVisitor(sut_function, func_call_analyzer)]
+
+    _instrument(transformations, source_dir, output_dir)
+
+    functions = func_call_analyzer.process(elicitation.functions)
+
+    functions_json_file = open(os.path.join(output_dir, FUNCTIONS_JSON_FILE), 'w')
+    json.dump(functions, functions_json_file, sort_keys=True, indent=2)
+    functions_json_file.close()
+
+
+def instrument_for_interference (sut_function, variable_name, local, substitute_value, source_dir, output_dir):
+    if local:
+        variable_strategy = LocalVariableStrategy(variable_name)
+    else:
+        variable_strategy = NonLocalVariableStrategy(variable_name)
+    variable_interference = VariableInstrumentation(variable_strategy, substitute_value)
+    transformations = [FuncBodyVisitor(sut_function, variable_interference)]
+
+    _instrument(transformations, source_dir, output_dir)
+
+    if not variable_interference.instrumented:
+        raise Exception('Could not find variable "%s" inside function "%s" to instrument !' % (
+            variable_name, sut_function
+        ))

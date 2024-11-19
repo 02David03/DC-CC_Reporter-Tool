@@ -27,7 +27,7 @@
     <main id="index-main" class="container mt-4">
       <h1 class="text-center"> Relatório de cobertura da análise de DC/CC </h1>
       <!-- Infos -->
-      <div class="accordion warning mt-3" id="accordionExample">
+      <div class="accordion warning mt-3" id="accordionWarning">
         <div class="accordion-item">
           <h2 class="accordion-header" id="headingOne">
             <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-one" aria-expanded="true" aria-controls="collapse-one">
@@ -60,7 +60,11 @@
               </div>
               <div class="d-flex gap-2 align-items-center">
                 <span class="sm-circle gray-bg"></span>
-                <span>Não identificavel</span>
+                <span>Não analisado</span>
+              </div>
+              <div class="d-flex gap-2 align-items-center">
+                <span class="sm-circle warning-bg"></span>
+                <span>Acoplamento não identificado</span>
               </div>
             </div>
             <!-- Grid Graph -->
@@ -72,7 +76,7 @@
         </div>
 
         <!-- Components List -->
-        <div id="components-col" class="col-6 py-3">
+        <div id="components-col" class="col-6 py-3 z-1">
           <div class="content-box d-flex align-items-center position-relative overflow-hidden h-100 flex-column">
             <a href="coupling_component_detail.html">
               <h2 class="mb-3"> Cobertura de componentes </h2>
