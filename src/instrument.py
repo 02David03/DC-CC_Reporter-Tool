@@ -2,6 +2,7 @@ import os
 import shutil
 import subprocess
 import json
+import pycparser
 
 from elicitation_instrumentation import ElicitationInstrumentation
 from func_call_analyzer import FuncCallAnalyzer
@@ -25,11 +26,17 @@ def _instrument (transformations, source_dir, output_dir):
 
         try:
             c_transformed = c_transformer.transform(os.path.join(source_dir, filename))
-        except KeyError as error:
-            print('Could not process type "%s" on file "%s"' % (
-                error.args[0],
-                filename
-            ))
+        except Exception as error:
+            if type(error) == KeyError:
+                print('Could not process type "%s" on file "%s"' % (
+                    error.args[0],
+                    filename
+                ))
+            elif type(error) == pycparser.plyparser.ParseError:
+                print('Could not complete parsing C project:')
+                print(' ', error)
+            else:
+                raise error
             exit(1)
 
         output_file = open(os.path.join(output_dir, filename), 'w')
