@@ -11,72 +11,48 @@ from c_function import CFunction
 from reports import report_results_in_js
 
 
+OUTPUT_FOLDER = 'output'
+
 arg_parser = argparse.ArgumentParser(
     description="Instrument and test C functions"
 )
+arg_parser.add_argument('c_src_dir')
 arg_parser.add_argument('sut')
-arg_group = arg_parser.add_argument_group('Actions')
-arg_group.add_argument('-i', '--instrument', dest='source_dir', help='Instrument code and compile it')
-arg_group.add_argument('-t', '--test', action='store_true', help='Test instrumented code')
-arg_group.add_argument('-a', '--analyze', action='store_true', help='Analyze for DC|CC')
-
-arg_group = arg_parser.add_argument_group('Instrumentation/Test options')
-arg_group.add_argument('-s', '--storage-dir', default='output', help='Folder for instrumented code (it will be rewritten) / Source folder to test')
-
-arg_group = arg_parser.add_argument_group('Test options')
-arg_group.add_argument('-c', '--test-csv', default='test.csv', help='CSV containing test cases')
-
-arg_group = arg_parser.add_argument_group('DC|CC options')
-arg_group.add_argument('-p', '--precision', default=1e-5, type=float, help='Threshold for equality of floating point numbers')
 
 opts = arg_parser.parse_args()
 
-if not (opts.source_dir or opts.test or opts.analyze):
-    msg = 'No action specified!'
-    print(msg)
-    print('=' * len(msg) + '\n')
-    arg_parser.print_help()
-    exit(1)
-    
-if opts.analyze and not opts.test:
-    print('DC|CC analysis not possible without testing a function (SUT)')
+test_csv = os.path.join(opts.c_src_dir, 'test.csv')
+
+instrument.set_up_output_folder(opts.c_src_dir, OUTPUT_FOLDER)
+instrument.instrument_for_elicitation(opts.sut, opts.c_src_dir, OUTPUT_FOLDER)
+
+if not os.path.isfile(test_csv):
+    print('CSV file "%s" not found!' % test_csv)
     exit(1)
 
-if opts.source_dir:
-    instrument.set_up_output_folder(opts.source_dir, opts.storage_dir)
-    instrument.instrument_for_elicitation(opts.sut, opts.source_dir, opts.storage_dir)
+function_defs_json_path = os.path.join(OUTPUT_FOLDER, instrument.FUNCTIONS_JSON_FILE)
+c_library_path = os.path.join(OUTPUT_FOLDER, instrument.LIBRARY_FILE)
+if not (os.path.isfile(function_defs_json_path) and os.path.isfile(c_library_path)):
+    print('Could not load folder "%s".' % OUTPUT_FOLDER)
+    print('Make sure it is previously instrumented code!')
+    exit(1)
 
-if opts.test:
-    if not os.path.isfile(opts.test_csv):
-        print('CSV file "%s" not found!' % opts.test_csv)
-        exit(1)
+function_defs_json_file = open(function_defs_json_path)
+function_defs = json.load(function_defs_json_file)
+function_defs_json_file.close()
 
-    function_defs_json_path = os.path.join(opts.storage_dir, instrument.FUNCTIONS_JSON_FILE)
-    c_library_path = os.path.join(opts.storage_dir, instrument.LIBRARY_FILE)
-    if not (os.path.isfile(function_defs_json_path) and os.path.isfile(c_library_path)):
-        print('Could not load folder "%s".' % opts.storage_dir)
-        print('Make sure it is previously instrumented code!')
-        exit(1)
+sut_def = function_defs.get(opts.sut)
+if sut_def == None: 
+    print(f'No function found with the name "{opts.sut}"')
+    exit(1)
 
-    function_defs_json_file = open(function_defs_json_path)
-    function_defs = json.load(function_defs_json_file)
-    function_defs_json_file.close()
+compare = create_param_value_comparator()
+c_function = CFunction(c_library_path, opts.sut, sut_def)
+test_results = TestResults(function_defs)
 
-    sut_def = function_defs.get(opts.sut)
-    if sut_def == None: 
-        print(f'No function found with the name "{opts.sut}"')
-        exit(1)
+test_c_function(c_function, sut_def, test_results, test_csv, compare)
 
-    compare = create_param_value_comparator(opts.precision)
-
-    test_results = TestResults(function_defs)
-
-    c_function = CFunction(c_library_path, opts.sut, sut_def)
-
-    test_c_function(c_function, sut_def, test_results, opts.test_csv, compare)
-
-    if opts.analyze:
-        analyzer = Analyzer(test_results, c_function, compare)
-        analysis_results = analyzer.analyze_dc_cc()
-        analysis_results_tricked = analyzer.analyze_with_tricked_variables(analysis_results, opts.source_dir, opts.storage_dir)
-        report_results_in_js(test_results, analysis_results, analysis_results_tricked.internal_vars)
+analyzer = Analyzer(test_results, c_function, compare)
+analysis_results = analyzer.analyze_dc_cc()
+analysis_results_tricked = analyzer.analyze_with_tricked_variables(analysis_results, opts.c_src_dir, OUTPUT_FOLDER)
+report_results_in_js(test_results, analysis_results, analysis_results_tricked.internal_vars)
