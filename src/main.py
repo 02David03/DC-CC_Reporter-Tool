@@ -51,6 +51,9 @@ c_function = CFunction(c_library_path, opts.sut, sut_def)
 test_results = TestResults(function_defs)
 
 test_c_function(c_function, sut_def, test_results, test_csv, compare)
+instrumentation_data_filehandle = open(os.path.join(OUTPUT_FOLDER, instrument.INSTRUMENTATION_OUTPUT_FILE))
+test_results.process_instrumentation_data(instrumentation_data_filehandle)
+instrumentation_data_filehandle.close()
 
 analyzer = Analyzer(test_results, c_function, compare)
 analysis_results = analyzer.analyze_dc_cc()

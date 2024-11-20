@@ -2,7 +2,7 @@ import re
 import collections
 
 from param_helpers import is_output_param, convert_string
-from elicitation_instrumentation import DELIMITER
+from elicitation_instrumentation import DELIMITER, SUT_RUN_TOKEN
 
 
 TestResultEntry = collections.namedtuple('TestResultEntry', (
@@ -20,6 +20,9 @@ TestFailureEntry = collections.namedtuple('TestFailureEntry', (
 ))
 
 INSTRUMENTATION_REGEX = re.compile(DELIMITER + r'(\w+)\.(in|out)')
+
+# how much lines it is needed for one function instrumentation output
+LINE_GROUP = 3
 
 
 def _convert_collected_string (string, param_type):
@@ -40,33 +43,41 @@ class TestResults:
     def __init__ (self, function_defs):
         self.functions_defs = function_defs
     
-    def _process_instrumented_data (self, instrumented_data):
+    def process_instrumentation_data (self, data_filehandle):
+        lines = collections.deque([None] * (LINE_GROUP-1), maxlen=LINE_GROUP)
+        sut_run_count = -1
 
-        internal_vars = {}
-        for lines in zip(instrumented_data, instrumented_data[1:], instrumented_data[2:]):
-            if lines[0] == lines[2] and lines[0].startswith(DELIMITER):
-                function_name, direction = INSTRUMENTATION_REGEX.match(lines[0]).groups()
-                params = lines[1].split()
-                function_def = self.functions_defs[function_name]
+        while sut_run_count < len(self):
+            line = data_filehandle.readline()
+            if not line:
+                return
+            if line.startswith(SUT_RUN_TOKEN):
+                sut_run_count += 1
+            
+            lines.append(line)
 
-                if direction == 'out':
-                    for param_def, param_value in zip(filter(is_output_param, function_def), params):
-                        if param_def['local']:
-                            variable_name = param_def['call_name']
-                            internal_vars[variable_name] = _convert_collected_string(param_value, param_def['type'])
-                            if variable_name not in self.internal_vars_names:
-                                self.internal_vars_names.append(variable_name)
-        
-        return internal_vars
+            if lines[0] == lines[LINE_GROUP-1]:
+                match = INSTRUMENTATION_REGEX.match(lines[0])
+                if match:
+                    function_name, direction = match.groups()
+                    params = lines[1].split()
+                    function_def = self.functions_defs[function_name]
 
-    
-    def add (self, inputs, outputs, instrumented_data):
-        internal_vars = self._process_instrumented_data(instrumented_data)
+                    if direction == 'out':
+                        for param_def, param_value in zip(filter(is_output_param, function_def), params):
+                            if param_def['local']:
+                                variable_name = param_def['call_name']
+                                self[sut_run_count].internal_vars[variable_name] = _convert_collected_string(param_value, param_def['type'])
+                                if variable_name not in self.internal_vars_names:
+                                    self.internal_vars_names.append(variable_name)
+
+
+    def add (self, inputs, outputs):
         self._entries.append(TestResultEntry(
             inputs,
             outputs,
             [],
-            internal_vars
+            {}
         ))
     
     def register_failure (self, test_number, param_idx, expected_value, actual_value):
