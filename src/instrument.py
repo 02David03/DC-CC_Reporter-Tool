@@ -20,17 +20,6 @@ def _instrument (transformations, source_dir, output_dir):
         os.listdir(source_dir)
     ))
 
-    shutil.rmtree(output_dir, ignore_errors=True)
-
-    def ignore_instrumented_files (src, names):
-        return c_files if src == source_dir else []
-
-    shutil.copytree(
-        source_dir,
-        output_dir,
-        ignore=ignore_instrumented_files
-    )
-
     c_transformer = CTransformer(transformations)
     for filename in c_files:
 
@@ -54,6 +43,17 @@ def _instrument (transformations, source_dir, output_dir):
 
     subprocess.run(compilation_command, check=True, cwd=output_dir)
 
+def set_up_output_folder (source_dir, output_dir):
+    shutil.rmtree(output_dir, ignore_errors=True)
+
+    def ignore_files_to_instrument (src, names):
+        return filter(lambda name: name.endswith('.c'), names)
+
+    shutil.copytree(
+        source_dir,
+        output_dir,
+        ignore=ignore_files_to_instrument
+    )
 
 def instrument_for_elicitation (sut_function, source_dir, output_dir):
 

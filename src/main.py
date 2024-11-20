@@ -1,7 +1,6 @@
 import argparse
 import os
 import json
-import copy
 
 import instrument
 from param_helpers import create_param_value_comparator
@@ -44,6 +43,7 @@ if opts.analyze and not opts.test:
     exit(1)
 
 if opts.source_dir:
+    instrument.set_up_output_folder(opts.source_dir, opts.storage_dir)
     instrument.instrument_for_elicitation(opts.sut, opts.source_dir, opts.storage_dir)
 
 if opts.test:
