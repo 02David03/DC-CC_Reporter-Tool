@@ -9,6 +9,7 @@ let vars = []
 
 getComponentIndex();
 setVarsAndOutputs();
+mountComponentTable();
 changeSelectedComponent();
 
 function getComponentIndex() {
@@ -26,7 +27,6 @@ function mountComponentDetail() {
   mountAnalysesGRN1();
   setComponentListHeight();
   mountComponentList();
-  mountComponentTable();
 }
 
 function mountAnalysesGRN1() {
@@ -48,7 +48,9 @@ function mountAnalysesGRN1() {
 function mountComponentList(componentsArr = components) {
   $('#components-list').children().remove();
   componentsArr.forEach((component, index) => {
-    $('#components-list').append(`<span class='fake-link' onclick='changeSelectedComponent(${index})'>` + component.name + "</span>");
+    if(Object.keys(component['couplings']).length !== 0) {
+      $('#components-list').append(`<span class='fake-link' onclick='changeSelectedComponent(${index})'>` + component.name + "</span>");
+    }
   });
 }
 
@@ -76,7 +78,6 @@ function insertComponentName() {
 }
 
 function mountComponentTable() {
-  console.log(tests)
   for (let i = 0; i < tests.length; i++) {
     insertTableCel('test-col', `Teste ${i + 1}`, (i % 2 === 0));
   }

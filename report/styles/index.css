@@ -12,6 +12,7 @@
   --black-color: #1a1c1d;
   --primary-bg-color: #1889da86;
   --error-bg-color-lighter: #ac0c0c85;
+  --success-bg-color: #03c03c96;
   --error-bg-color: #a70808cc;
   --warning-bg-color-lighter: #f7df9fbd;
   --warning-bg-color:  #f8b1188f;
@@ -204,6 +205,9 @@ h2 {
 }
 
 .table-cel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 4px 8px;
   font-size: 18px;
   border-radius: 2px;
@@ -220,6 +224,10 @@ h2 {
 
 .table-cel.error {
   background-color: var(--error-bg-color-lighter);
+}
+
+.table-cel.success {
+  background-color: var(--success-bg-color);
 }
 
 .table-cel.coupled {

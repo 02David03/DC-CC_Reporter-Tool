@@ -39,8 +39,9 @@
           <div id="collapse-one" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
             <div class="accordion-body">
               <ul class="gap-2 d-flex flex-column my-2" id="info-list">
-                <li> A existência de circulos azuis no gráfico de grade representa acoplamento entre entrada e saída respectiva ao ponto de encontro. Ao passar o mouse pelo ponto é possível identificar os valores que a saída do componente causaram acoplamento</li>
-                <li> A ausência de alguma saída do SUT tanto no gráfico de grade de acoplamentos quanto na tabela de análise de acoplamento significa que não foi identificado acoplamento para essa saída</li>
+                <li> A existência de circulos azuis no gráfico de grade representa acoplamento entre entrada e saída respectiva ao ponto de encontro. Ao passar o mouse pelo ponto é possível identificar se a geração desse acoplamento foi forçada pela ferramenta ou não.</li>
+                <li> Forçar um acoplamento sinaliza que através dos testes passados não foi possível identificar um ambiente propício para análise de acoplamento daquela variavel de componente, e então a ferramenta forçou a criação dessa análise criando testes manipulados.</li>
+                <li> A tabela de valores de variáveis de componentes por teste executado não demonstra valores de testes forçados.</li>
               </ul>
             </div>
           </div>
@@ -48,8 +49,8 @@
       </div>
 
       <div class="row my-4">
-        <div id="GRN1-col" class="col-6 py-3">
-          <div class="content-box d-flex align-items-center flex-column">
+        <div id="GRN1-col" class="col-12 col-lg-6 py-3">
+          <div class="content-box d-flex align-items-center h-100 flex-column">
             <h2 class="add-component-name text-center mb-4"> Acoplamentos do componente  </h2>
             <!-- Grid Graph -->
             <canvas id="GRN1-grid-graph" width="350" height="350"></canvas>
@@ -71,7 +72,7 @@
           </div>
         </div>
 
-        <div id="components-col" class="col-6 py-3">
+        <div id="components-col" class="col-12 col-lg-6 py-3">
           <div class="content-box d-flex align-items-center position-relative overflow-hidden h-100 flex-column">
             <h2 class="mb-3"> Listagem de componentes </h2>
             <input id="component-filter" class="ms-auto w-75 my-3" placeholder="Filtrar componentes" type="text">
@@ -83,9 +84,9 @@
         <div class="col-12 py-3">
           <div class="content-box d-flex align-items-center h-100 flex-column">
             <!-- Table -->
-            <h2 class="mb-4 text-center"> Tabela das saídas dos componentes por execução de teste</h2>
+            <h2 class="mb-4 text-center"> Tabela de valores de variáveis de componentes por teste executado</h2>
 
-            <div id="component-table" class="d-flex justify-content-center table-responsive gap-3 px-3">
+            <div id="component-table" class="d-flex table-responsive justify-content-xl-center gap-3 px-3">
               <div id="test-col">
                 <div class="head-table-cel">
                   Teste

@@ -45,8 +45,8 @@
 
       <div class="row my-4">
         <!-- SUT coupling Analyses -->
-        <div id="GRN0-col" class="col-6 py-3">
-          <div class="content-box d-flex align-items-center flex-column">
+        <div id="GRN0-col" class="col-12 col-lg-6 py-3">
+          <div class="content-box d-flex align-items-center flex-column h-100">
             <!-- Donut Graph -->
             <a href="coupling_sut_detail.html">
               <h2 class="mb-4"> Acoplamento do SUT </h2>
@@ -76,7 +76,7 @@
         </div>
 
         <!-- Components List -->
-        <div id="components-col" class="col-6 py-3 z-1">
+        <div id="components-col" class="col-12 col-lg-6 py-3 z-1">
           <div class="content-box d-flex align-items-center position-relative overflow-hidden h-100 flex-column">
             <a href="coupling_component_detail.html">
               <h2 class="mb-3"> Cobertura de componentes </h2>
@@ -92,7 +92,7 @@
           <div class="content-box d-flex align-items-center flex-column">
             <h2 class="mb-4"> Resultados dos testes </h2>
             <!-- Table -->
-            <div id="test-table" class="d-flex justify-content-center table-responsive gap-3 px-3">
+            <div id="test-table" class="d-flex table-responsive justify-content-xl-center gap-3 px-3">
               <div id="test-col">
                 <div class="head-table-cel">
                   Teste
@@ -104,7 +104,6 @@
                 <div class="head-table-cel">
                   Entradas
                 </div>
-
                 <div class="d-flex align-items-center cels-spot gap-1"></div>
               </div>
 
@@ -112,7 +111,6 @@
                 <div class="head-table-cel">
                   Saídas esperadas
                 </div>
-
                 <div class="d-flex align-items-center cels-spot gap-1"></div>
               </div>
               
@@ -120,9 +118,17 @@
                 <div class="head-table-cel">
                   Saídas Obtidas
                 </div>
-
                 <div class="d-flex align-items-center cels-spot gap-1"></div>
               </div>
+
+              <div id="results-col">
+                <div class="head-table-cel">
+                  Resultados
+                </div>
+                <div class="subhead-table-cel" style="opacity: 0;" > #1 </div>
+                <div class="d-flex align-items-center cels-spot gap-1"></div>
+              </div>              
+
             </div>
           </div>
         </div>

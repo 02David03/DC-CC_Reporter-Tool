@@ -11,7 +11,6 @@ let outputs = []
 mountWarningList();
 mountAnalysesGRN0();
 setInputsAndOutputs();
-setComponentListHeight()
 mountComponentList();
 mountTestComparationTable();
 
@@ -56,14 +55,12 @@ function setInputsAndOutputs() {
   });
 }
 
-function setComponentListHeight() {
-  $('#components-col').css("height", $('#GRN0-col').css("height"));
-}
 
 function mountComponentList(componentsArr = components) {
-  $('#components-list').children().remove();
   componentsArr.forEach((component, index) => {
-    $('#components-list').append(`<a href='coupling_component_detail.html?component=${index}'>` + component.name + "</a>");
+    if(Object.keys(component['couplings']).length !== 0) {
+      $('#components-list').append(`<a href='coupling_component_detail.html?component=${index}'>` + component.name + "</a>");
+    }
   });
 }
 
@@ -86,19 +83,24 @@ function insertTableCel(el_id, text, isDark) {
 }
 
 function compareAndInsertCelArray() {
+  let resultArr = [];
   for (let i = 0; i < tests.length; i++) {
     const test = tests[i];
+    let hasError = false;
     for (let j = 0; j < test[1].length; j++) {
       let expected_output = test[2][j];
       let output = test[1][j];
       if(expected_output !== output) {
         test[2][j] +=' error';
         test[1][j] +=' error';
+        hasError = true;
       }
     }
+    resultArr.push(hasError ? 'FAIL' : 'PASS');
   }
   insertTableCol(outputs, 2, 'expected-output-col');
   insertTableCol(outputs, 1, 'output-col');
+  insertResultCol(resultArr);
 }
 
 function insertTableCol(subhead_arr, index, el_id) {
@@ -117,4 +119,13 @@ function insertTableCol(subhead_arr, index, el_id) {
     arrCels += '</div>';
     $(`#${el_id} .cels-spot`).append(arrCels);
   }
+}
+
+
+function insertResultCol(result_arr) {
+  let arrCels = "<div class='d-flex flex-column align-items-center w-100'>";
+  result_arr.forEach(result => {
+    arrCels += `<div class="table-cel text-wrap w-100 ${result === 'FAIL' ? 'error' : 'success'}" >` + result + "</div>"
+  });
+  $(`#results-col .cels-spot`).append(arrCels);
 }

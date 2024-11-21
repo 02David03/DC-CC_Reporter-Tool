@@ -7,15 +7,17 @@ function mountAnalysesGRN0() {
   let graphData = [0, 0, 0];
   for(const key in couplingSUT) {
     const subObj = couplingSUT[key];
-    const hasValues = Object.keys(subObj).length > 1; 
-    console.log(hasValues)
-    if(hasValues) {
-      graphData[0]++
+    if(!subObj['analysed']) {
+      graphData[1]++
     } else {
-      if(subObj['analysed']) {
-        graphData[2]++
+      let hasAnyValue = false;
+      Object.entries(subObj).forEach(entry => {
+        if(entry[0] !== "analysed" && entry[1] !== null) hasAnyValue = true;
+      })
+      if(hasAnyValue) {
+        graphData[0]++
       } else {
-        graphData[1]++
+        graphData[2]++
       }
     }
   }
@@ -76,12 +78,12 @@ function insertOutputsTableCelArray(outputs) {
   Object.entries(couplingSUT).forEach(entry => {
     let arrCels = "<div class='d-flex align-items-center'>";
     for (let i = 0; i < outputs.length; i++) {
-      if(entry[1][outputs[i]]) {
+      if(entry[1][outputs[i]] && entry[1][outputs[i]].length > 0) {
         arrCels += `<div class="table-cel coupled">` + entry[1][outputs[i]].map(testes => {
           return 'teste ' + testes[0] +' <=> ' + 'teste ' + testes[1];
         }).join('<br>') + "</div>";
       } else {
-        arrCels += `<div class="table-cel ${entry[0] % 2 === 0 ? 'dark' : ''}"> # </div>`;
+        arrCels += `<div class="table-cel justify-content-center ${entry[0] % 2 === 0 ? 'dark' : ''}"> # </div>`;
       }
     }
     arrCels += '</div>';
