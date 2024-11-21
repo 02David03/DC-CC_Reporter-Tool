@@ -10,6 +10,7 @@ let vars = []
 getComponentIndex();
 setVarsAndOutputs();
 mountComponentTable();
+mountAnalysesTable();
 changeSelectedComponent();
 
 function getComponentIndex() {
@@ -25,7 +26,6 @@ function changeSelectedComponent(index = componentIndex) {
 function mountComponentDetail() {
   insertComponentName();
   mountAnalysesGRN1();
-  setComponentListHeight();
   mountComponentList();
 }
 
@@ -65,10 +65,6 @@ $(document).on('input', '#component-filter', function() {
   mountComponentList(filteredComponents);
 });
 
-function setComponentListHeight() {
-  $('#components-col').css("height", $('#GRN1-col').css("height"));
-}
-
 function insertComponentName() {
   $('.add-component-name').each( function() {
     let text = $(this).text();
@@ -83,6 +79,24 @@ function mountComponentTable() {
   }
   insertTableCol(vars, 'internal_vars', 'comp-vars-col', true);
   insertTableCol(outputs, 'outputs', 'sut-outputs-col');
+}
+
+function mountAnalysesTable() {
+  for (let i = 0; i < outputs.length; i++) {
+    insertTableCel('sut-outputs-col-2', `${outputs[i]}`, (i % 2 === 0));
+  }
+  let coupled_vars = vars.reduce((a, v) => ({ ...a, [v]: {sut_outputs: [], forced: false}}), {})
+  components.forEach(component => {
+    Object.entries(component['couplings']).forEach(entry => {
+      let concat_arr = coupled_vars[entry[0]]['sut_outputs'].concat(entry[1]['sut_outputs']);
+      let set = new Set(concat_arr);
+      coupled_vars[entry[0]]['sut_outputs'] = Array.from(set);
+      coupled_vars[entry[0]]['forced'] = entry[1]['forced']
+    });
+  });
+
+  console.log(coupled_vars)
+  insertVarsCol(coupled_vars);
 }
 
 function insertTableCel(el_id, text, isDark) {
@@ -102,3 +116,21 @@ function insertTableCol(subhead_arr, fieldName, el_id, is_obj = false) {
     $(`#${el_id} .cels-spot`).append(arrCels);
   }
 }
+
+function insertVarsCol(coupled_vars) {
+  Object.entries(coupled_vars).forEach(entry => {
+    
+    let arrCels = "<div class='d-flex flex-column align-items-center w-100'>";
+    arrCels += "<div class='subhead-table-cel w-100'>" + entry[0] + "</div>"
+    arrCels += `<div class='table-cel dark ${entry[1].forced ? 'error': 'opacity-0'} w-100'>` + 'Forced' + "</div>"
+    
+    outputs.forEach((output, i) => {
+      let coupled = entry[1].sut_outputs.includes(output);
+      arrCels += `<div class="table-cel text-wrap w-100 ${i % 2 === 0 ? 'dark' : ''} ${coupled ? 'coupled' : ''}">` + (coupled ? 'X' : 'O') + "</div>"
+    });
+
+    arrCels += '</div>';
+    $(`#comp-vars-col-2 .cels-spot`).append(arrCels);
+  });
+}
+

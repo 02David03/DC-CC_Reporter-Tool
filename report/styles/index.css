@@ -94,6 +94,10 @@ h2 {
   font-size: 20px;
 }
 
+.opacity-0 {
+  opacity: 0;
+}
+
 
 /* Accordion */
 .accordion.warning .accordion-button {
@@ -230,7 +234,8 @@ h2 {
   background-color: var(--success-bg-color);
 }
 
-.table-cel.coupled {
+.table-cel.coupled,
+.table-cel.dark.coupled {
   background-color: var(--primary-bg-color);
 }
 
