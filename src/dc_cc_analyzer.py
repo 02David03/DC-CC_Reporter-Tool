@@ -20,9 +20,8 @@ class Analyzer ():
     def analyze_dc_cc (self):
         input_params = {
             input_name: {
-                **dict.fromkeys(self.c_function.output_names, []),
-                'status': AnalysisStatus.AMBIGUOUS           
-            }
+                key: [] for key in self.c_function.output_names
+            } | {'status': AnalysisStatus.AMBIGUOUS}
             for input_name in self.c_function.input_names
         }
 

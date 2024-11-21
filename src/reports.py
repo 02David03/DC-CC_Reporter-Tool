@@ -21,7 +21,7 @@ def report_results_in_js (components_defs, test_results, analysis_results, analy
     with open(report_js_path, 'w') as file:
         file.write(report_js)
         file.close()
-    print('Relatório de cobertura da análise de DC/CC montado, acesso o relatório em report/index.html')
+    print('Relatório de cobertura da análise de DC/CC montado, acesse o relatório em report/index.html')
     index_html_path = os.path.abspath('./report/index.html')
     webbrowser.open_new(index_html_path)
 

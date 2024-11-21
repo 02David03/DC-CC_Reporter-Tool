@@ -14,19 +14,6 @@ setInputsAndOutputs();
 mountComponentList();
 mountTestComparationTable();
 
-function compareValues (a, b) {
-  const isIntegerA = parseInt(a) === a
-  const isIntegerB = parseInt(b) === b
-  if (isIntegerA !== isIntegerB) {
-    return false;
-  } else if (isIntegerA) {
-    return a === b;
-  } else {
-    // Floating point numbers should have 10^-5 precision
-    return Math.abs(a - b) < 1e-5;
-  }
-}
-
 function mountWarningList() {
   if(!warnings) {
     $('#accordionWarning').addClass('d-none');
@@ -120,7 +107,8 @@ function insertTableCol(subhead_arr, fieldName, el_id, testErrors=null) {
     arrCels += "<div class='subhead-table-cel w-100'>" + subhead + "</div>"
     for (let testLine = 0; testLine < tests.length; testLine++) {
       const cel = tests[testLine][fieldName][testColumn];
-      const hasError = testErrors?.[testLine].indexOf(testColumn) !== -1;
+      const hasError = testErrors ? testErrors[testLine].indexOf(testColumn) !== -1 : false;
+      console.log(hasError)
       arrCels += `<div class="table-cel text-wrap w-100 ${hasError ? 'error' : ''} ${testLine % 2 === 0 ? 'dark' : ''}" >` + cel + "</div>"
     }
     arrCels += '</div>';
@@ -128,11 +116,23 @@ function insertTableCol(subhead_arr, fieldName, el_id, testErrors=null) {
   }
 }
 
-
 function insertResultCol(result_arr) {
   let arrCels = "<div class='d-flex flex-column align-items-center w-100'>";
   result_arr.forEach(result => {
     arrCels += `<div class="table-cel text-wrap w-100 ${result === 'FAIL' ? 'error' : 'success'}" >` + result + "</div>"
   });
   $(`#results-col .cels-spot`).append(arrCels);
+}
+
+function compareValues (a, b) {
+  const isIntegerA = parseInt(a) === a
+  const isIntegerB = parseInt(b) === b
+  if (isIntegerA !== isIntegerB) {
+    return false;
+  } else if (isIntegerA) {
+    return a === b;
+  } else {
+    // Floating point numbers should have 10^-5 precision
+    return Math.abs(a - b) < 1e-5;
+  }
 }
