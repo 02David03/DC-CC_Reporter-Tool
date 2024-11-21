@@ -1,6 +1,7 @@
 import argparse
 import os
 import json
+import copy
 
 import instrument
 from param_helpers import create_param_value_comparator
@@ -58,4 +59,6 @@ instrumentation_data_filehandle.close()
 analyzer = Analyzer(test_results, c_function, compare)
 analysis_results = analyzer.analyze_dc_cc()
 analysis_results_tricked = analyzer.analyze_with_tricked_variables(analysis_results, opts.c_src_dir, OUTPUT_FOLDER)
-report_results_in_js(test_results, analysis_results, analysis_results_tricked.internal_vars)
+components_defs = copy.deepcopy(function_defs)
+components_defs.pop(opts.sut)
+report_results_in_js(components_defs, test_results, analysis_results, analysis_results_tricked.internal_vars)

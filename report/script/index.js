@@ -14,6 +14,19 @@ setInputsAndOutputs();
 mountComponentList();
 mountTestComparationTable();
 
+function compareValues (a, b) {
+  const isIntegerA = parseInt(a) === a
+  const isIntegerB = parseInt(b) === b
+  if (isIntegerA !== isIntegerB) {
+    return false;
+  } else if (isIntegerA) {
+    return a === b;
+  } else {
+    // Floating point numbers should have 10^-5 precision
+    return Math.abs(a - b) < 1e-5;
+  }
+}
+
 function mountWarningList() {
   if(!warnings) {
     $('#accordionWarning').addClass('d-none');
@@ -74,7 +87,7 @@ function mountTestComparationTable() {
   for (let i = 0; i < tests.length; i++) {
     insertTableCel('test-col', `Teste ${i + 1}`, (i % 2 === 0));
   }
-  insertTableCol(inputs, 0, 'entries-col');
+  insertTableCol(inputs, 'inputs', 'entries-col');
   compareAndInsertCelArray()
 }
 
@@ -83,38 +96,32 @@ function insertTableCel(el_id, text, isDark) {
 }
 
 function compareAndInsertCelArray() {
-  let resultArr = [];
+  const testErrors = []
   for (let i = 0; i < tests.length; i++) {
     const test = tests[i];
-    let hasError = false;
-    for (let j = 0; j < test[1].length; j++) {
-      let expected_output = test[2][j];
-      let output = test[1][j];
-      if(expected_output !== output) {
-        test[2][j] +=' error';
-        test[1][j] +=' error';
-        hasError = true;
+    testErrors.push([])
+    for (let j = 0; j < test.outputs.length; j++) {
+      const expectedOutput = test.expected_outputs[j];
+      const actualOutput = test.outputs[j];
+      if(!compareValues(expectedOutput, actualOutput)) {
+        testErrors[i].push(j)
       }
     }
-    resultArr.push(hasError ? 'FAIL' : 'PASS');
   }
-  insertTableCol(outputs, 2, 'expected-output-col');
-  insertTableCol(outputs, 1, 'output-col');
-  insertResultCol(resultArr);
+  insertTableCol(outputs, 'expected_outputs', 'expected-output-col', testErrors);
+  insertTableCol(outputs, 'outputs', 'output-col', testErrors);
+  insertResultCol(testErrors.map(errorEntry => errorEntry.length ? 'FAIL' : 'PASS'));
 }
 
-function insertTableCol(subhead_arr, index, el_id) {
-  for (let i = 0; i < subhead_arr.length; i++) {
+function insertTableCol(subhead_arr, fieldName, el_id, testErrors=null) {
+  for (let testColumn = 0; testColumn < subhead_arr.length; testColumn++) {
     let arrCels = "<div class='d-flex flex-column align-items-center w-100'>";
-    const subhead = subhead_arr[i];
+    const subhead = subhead_arr[testColumn];
     arrCels += "<div class='subhead-table-cel w-100'>" + subhead + "</div>"
-    for (let j = 0; j < tests.length; j++) {
-      let cel = tests[j][index][i];
-      let hasError = String(cel).includes('error');
-      if(hasError) {
-        cel = cel.replace('error', '');
-      }
-      arrCels += `<div class="table-cel text-wrap w-100 ${hasError ? 'error' : ''} ${j % 2 === 0 ? 'dark' : ''}" >` + cel + "</div>"
+    for (let testLine = 0; testLine < tests.length; testLine++) {
+      const cel = tests[testLine][fieldName][testColumn];
+      const hasError = testErrors?.[testLine].indexOf(testColumn) !== -1;
+      arrCels += `<div class="table-cel text-wrap w-100 ${hasError ? 'error' : ''} ${testLine % 2 === 0 ? 'dark' : ''}" >` + cel + "</div>"
     }
     arrCels += '</div>';
     $(`#${el_id} .cels-spot`).append(arrCels);

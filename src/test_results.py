@@ -36,12 +36,10 @@ class TestResults:
 
     _entries = []
 
-    failed_tests = []
-
     internal_vars_names = []
 
     def __init__ (self, function_defs):
-        self.functions_defs = function_defs
+        self._functions_defs = function_defs
     
     def process_instrumentation_data (self, data_filehandle):
         lines = collections.deque([None] * (LINE_GROUP-1), maxlen=LINE_GROUP)
@@ -61,7 +59,7 @@ class TestResults:
                 if match:
                     function_name, direction = match.groups()
                     params = lines[1].split()
-                    function_def = self.functions_defs[function_name]
+                    function_def = self._functions_defs[function_name]
 
                     if direction == 'out':
                         for param_def, param_value in zip(filter(is_output_param, function_def), params):
@@ -72,16 +70,13 @@ class TestResults:
                                     self.internal_vars_names.append(variable_name)
 
 
-    def add (self, inputs, outputs):
+    def add (self, inputs, outputs, expected_outputs):
         self._entries.append(TestResultEntry(
             inputs,
             outputs,
-            [],
+            expected_outputs,
             {}
         ))
-    
-    def register_failure (self, test_number, param_idx, expected_value, actual_value):
-        self.failed_tests.append(TestFailureEntry(test_number, param_idx, expected_value, actual_value))
 
     def __len__ (self):
         return len(self._entries)

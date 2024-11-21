@@ -20,7 +20,7 @@ class Analyzer ():
     def analyze_dc_cc (self):
         input_params = {
             input_name: {
-                **dict.fromkeys(self.c_function.output_names),
+                **dict.fromkeys(self.c_function.output_names, []),
                 'status': AnalysisStatus.AMBIGUOUS           
             }
             for input_name in self.c_function.input_names
@@ -28,7 +28,7 @@ class Analyzer ():
 
         internal_vars = {
             var_name: {
-                'sut_outputs': None,
+                'sut_outputs': [],
                 'status': AnalysisStatus.AMBIGUOUS        
             }
             for var_name in self.test_results.internal_vars_names
@@ -37,8 +37,8 @@ class Analyzer ():
         analysis_results = AnalysisResults(input_params, internal_vars)
 
         for test_no_a, test_no_b in combinations(range(len(self.test_results)), 2):
-            (inputs_a, outputs_a, expected_outputs_a, internal_vars_a) = self.test_results[test_no_a]
-            (inputs_b, outputs_b, expected_outputs_b, internal_vars_b) = self.test_results[test_no_b]
+            (inputs_a, outputs_a, _, internal_vars_a) = self.test_results[test_no_a]
+            (inputs_b, outputs_b, _, internal_vars_b) = self.test_results[test_no_b]
 
             equal_outputs = all(starmap(
                 self.compare,
@@ -55,7 +55,7 @@ class Analyzer ():
                     varied_input_msg = self.c_function.input_names[j] + variation_msg
                     varied_input_name = self.c_function.input_names[j]
 
-            #SUT analysis        
+            # SUT analysis        
             if varied_inputs_count == 1:
                 if equal_outputs:
                     print('Same output tests %d and %d, varied parameter:' % (test_no_a+1, test_no_b+1))
@@ -65,16 +65,12 @@ class Analyzer ():
                 else:
                     analysis_results.input_params[varied_input_name]['status'] = AnalysisStatus.SUCCESS
                     for k in range(len(outputs_a)):
-                        current_output = self.c_function.output_names[k]
-
-                        if not analysis_results.input_params[varied_input_name][current_output]:
-                            analysis_results.input_params[varied_input_name][current_output] = []
+                        output_name = self.c_function.output_names[k]
 
                         if not self.compare(outputs_a[k], outputs_b[k]):
-                            if not (test_no_a + 1, test_no_b + 1) in analysis_results.input_params[varied_input_name][current_output]:
-                                analysis_results.input_params[varied_input_name][current_output].append((test_no_a + 1, test_no_b + 1))
+                            analysis_results.input_params[varied_input_name][output_name].append((test_no_a + 1, test_no_b + 1))
             
-            #Internal variables analysis
+            # Internal variables analysis
             changed_variable = None
             internal_variations_count = 0
             for var_name in self.test_results.internal_vars_names:
@@ -89,14 +85,11 @@ class Analyzer ():
                 else:
                     analysis_results.internal_vars[changed_variable]['status'] = AnalysisStatus.SUCCESS
                     for k in range(len(outputs_a)):
-                        current_output = self.c_function.output_names[k]
-
-                        if not analysis_results.internal_vars[changed_variable]['sut_outputs']:
-                            analysis_results.internal_vars[changed_variable]['sut_outputs'] = []
+                        output_name = self.c_function.output_names[k]
 
                         if not self.compare(outputs_a[k], outputs_b[k]):
-                            if not current_output in analysis_results.internal_vars[changed_variable]['sut_outputs']:
-                                analysis_results.internal_vars[changed_variable]['sut_outputs'].append(current_output)
+                            if not output_name in analysis_results.internal_vars[changed_variable]['sut_outputs']:
+                                analysis_results.internal_vars[changed_variable]['sut_outputs'].append(output_name)
 
         return analysis_results
 
@@ -138,13 +131,10 @@ class Analyzer ():
             else:
                 analysis_results.internal_vars[var_name]['status'] = AnalysisStatus.SUCCESS
                 for idx in range(len(outputs_values)):
-                    current_output = self.c_function.output_names[idx]
-                    
-                    if not analysis_results.internal_vars[var_name]['sut_outputs']:
-                        analysis_results.internal_vars[var_name]['sut_outputs'] = []
+                    output_name = self.c_function.output_names[idx]
 
                     if not self.compare(outputs_values[idx], self.test_results[0].outputs[idx]):
-                        if not current_output in analysis_results.internal_vars[var_name]['sut_outputs']:
-                            analysis_results.internal_vars[var_name]['sut_outputs'].append(current_output)
+                        if not output_name in analysis_results.internal_vars[var_name]['sut_outputs']:
+                            analysis_results.internal_vars[var_name]['sut_outputs'].append(output_name)
 
         return analysis_results
