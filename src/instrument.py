@@ -27,6 +27,10 @@ def _instrument (transformations, source_dir, output_dir):
         os.listdir(source_dir)
     ))
 
+    if not len(c_files):
+        print('No C files found !')
+        exit(1)
+
     c_transformer = CTransformer(transformations)
     for filename in c_files:
 
