@@ -103,12 +103,15 @@ class Analyzer ():
             basic_value = self.test_results[0].internal_vars[var_name]
             for i in range(1, len(self.test_results)):
                 new_value = self.test_results[i].internal_vars[var_name]
-                if new_value != basic_value:
+                if not self.compare(new_value, basic_value):
                     break
             else:
+                basic_value_type = type(basic_value)
                 while True:
                     new_value = random.randint(0, 255)
-                    if new_value != basic_value:
+                    if basic_value_type == float:
+                        new_value = float(new_value)
+                    if not self.compare(new_value, basic_value):
                         break
 
             instrument_for_interference(self.c_function.func_name, var_name, True, new_value, source_dir, output_dir)
