@@ -8,12 +8,13 @@ from elicitation_instrumentation import DELIMITER
 TestResultEntry = collections.namedtuple('TestResultEntry', (
     'inputs',
     'outputs',
+    'expected_outputs',
     'internal_vars'
 ))
 
 TestFailureEntry = collections.namedtuple('TestFailureEntry', (
     'test_number',
-    'param_name',
+    'param_idx',
     'expected_value',
     'actual_value'
 ))
@@ -64,14 +65,16 @@ class TestResults:
         self._entries.append(TestResultEntry(
             inputs,
             outputs,
+            [],
             internal_vars
         ))
     
-    def register_failure (self, test_number, param_name, expected_value, actual_value):
-        self.failed_tests.append(TestFailureEntry(test_number, param_name, expected_value, actual_value))
+    def register_failure (self, test_number, param_idx, expected_value, actual_value):
+        self.failed_tests.append(TestFailureEntry(test_number, param_idx, expected_value, actual_value))
 
     def __len__ (self):
         return len(self._entries)
 
     def __getitem__ (self, idx):
         return self._entries[idx]
+    

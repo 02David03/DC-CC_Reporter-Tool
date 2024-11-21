@@ -18,6 +18,7 @@ class CFunction ():
         c_signature = []
         for i, param in enumerate(func_def):
             c_type = getattr(ctypes, 'c_' + param['type'])
+            
             if is_output_param(param):
                 c_type = ctypes.POINTER(c_type)
                 self.output_idxs.append(i)

@@ -132,13 +132,11 @@ function drawGrid(canvas, ctx, entries, outputs, padding, is_component) {
 }
 
 function drawCouplingPoints(canvas, ctx, infoBox, dotRadius, padding, entries, outputs, data, is_component) {
-  console.log(entries);
-  console.log(outputs);
   for (let i = 0; i < entries.length; i++) {
     const entry = entries[i];
     for (let j = 0; j < outputs.length; j++) {
       const output = outputs[j];
-      let shouldDraw = !is_component ? data[entry] && data[entry][output] : data[entry] && data[entry]['sut_outputs'].includes(output);
+      let shouldDraw = !is_component ? data[entry][output] && data[entry][output].length > 0 : data[entry] && data[entry]['sut_outputs'].includes(output);
       if (shouldDraw) {
         let x = padding + j * (canvas.width - padding * 2) / ((outputs.length === 1 ? 2 : outputs.length) - 1);
         let y = padding + i * (canvas.height - padding * 2) / ((entries.length === 1 ? 2 : entries.length) - 1);

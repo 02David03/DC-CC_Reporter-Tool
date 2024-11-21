@@ -1,8 +1,14 @@
-const components = json_data.components
+const components = json_data.components;
+const tests = json_data.test_results;
+const couplingSUT = json_data.coupling_SUT;
+
 let componentIndex = 0;
 let selectedComponent = {};
+let outputs = []
+let vars = []
 
 getComponentIndex();
+setVarsAndOutputs();
 changeSelectedComponent();
 
 function getComponentIndex() {
@@ -46,6 +52,11 @@ function mountComponentList(componentsArr = components) {
   });
 }
 
+function setVarsAndOutputs() {
+  outputs = Object.keys(Object.values(couplingSUT)[0]).filter(name => name !== 'analysed');
+  vars = Object.keys(tests[0][3]);
+}
+
 $(document).on('input', '#component-filter', function() {
   let value = $(this).val();
   let filteredComponents = components.filter(component => component.name.includes(value));
@@ -65,69 +76,28 @@ function insertComponentName() {
 }
 
 function mountComponentTable() {
-  $('#comp-outputs-col').children().not(".head-table-cel, .subhead-table-cel").remove();
-  $('#sut-outputs-col').children().not(".head-table-cel").remove();
-  insertComponentOutputsCel();
-  let outputArr = [];
-  Object.values(selectedComponent['couplings']).forEach(value => {
-    outputArr = [...new Set([...value['sut_outputs'], ...outputArr])];
-  });
-  outputArr = outputArr.sort();
-  insertOutputsSubHeadCel(outputArr);
-  insertOutputsTableCelArray(outputArr);
-
-  let celsToWidth = $(".subhead-table-cel, .table-cel").not("#comp-outputs-col *");
-
-  let maxHeight = 0;
-  let maxWidth = 54;
-  celsToWidth.each(function() {
-    let elementWidth = $(this).outerWidth();
-    if (elementWidth > maxWidth) {
-        maxWidth = elementWidth;
-    }
-  });
-
-  $(".table-cel").each(function() {
-    let elementHeight = $(this).outerHeight();
-    if (elementHeight > maxHeight) {
-      maxHeight = elementHeight;
-    }
-  });
-    
-  celsToWidth.css("width", maxWidth + 5);
-  $(".table-cel").css("height", maxHeight);
-
-}
-
-function insertComponentOutputsCel() {
-  let arrCels = "<div class='d-flex flex-column align-items-center'>";
-  Object.keys(selectedComponent['couplings']).forEach((key, i) => {
-    arrCels += `<div class='table-cel w-100 ${i % 2 === 0 ? 'dark' : ''}'>` + key + "</div>"
-  });
-  arrCels += '</div>';
-  $(`#comp-outputs-col`).append(arrCels);
-}
-
-function insertOutputsSubHeadCel(arr) {
-  let arrCels = "<div class='d-flex align-items-center'>";
-  for (let i = 0; i < arr.length; i++) {
-    arrCels += "<div class='subhead-table-cel w-100'>" + arr[i] + "</div>"
+  console.log(tests)
+  for (let i = 0; i < tests.length; i++) {
+    insertTableCel('test-col', `Teste ${i + 1}`, (i % 2 === 0));
   }
-  arrCels += '</div>';
-  $(`#sut-outputs-col`).append(arrCels);
+  insertTableCol(vars, 3, 'comp-vars-col', true);
+  insertTableCol(outputs, 1, 'sut-outputs-col');
 }
 
-function insertOutputsTableCelArray(outputs) {
-  Object.entries(selectedComponent['couplings']).forEach((entry, index) => {
-    let arrCels = "<div class='d-flex align-items-center'>";
-    for (let i = 0; i < outputs.length; i++) {
-      if(entry[1]['sut_outputs'].includes(outputs[i])) {
-        arrCels += '<div class="table-cel coupled"> </div>';
-      } else {
-        arrCels += `<div class="table-cel ${index % 2 === 0 ? 'dark' : ''}">  </div>`;
-      }
+function insertTableCel(el_id, text, isDark) {
+  $(`#${el_id}`).append(`<div class='table-cel ${isDark ? 'dark' : ''}'>` + text + "</div>");
+}
+
+function insertTableCol(subhead_arr, index, el_id, is_obj = false) {
+  for (let i = 0; i < subhead_arr.length; i++) {
+    let arrCels = "<div class='d-flex flex-column align-items-center w-100'>";
+    const subhead = subhead_arr[i];
+    arrCels += "<div class='subhead-table-cel w-100'>" + subhead + "</div>"
+    for (let j = 0; j < tests.length; j++) {
+      let cel = is_obj ? tests[j][index][subhead_arr[i]] : tests[j][index][i];
+      arrCels += `<div class="table-cel text-wrap w-100 ${j % 2 === 0 ? 'dark' : ''}" >` + cel + "</div>"
     }
     arrCels += '</div>';
-    $(`#sut-outputs-col`).append(arrCels);
-  });
+    $(`#${el_id} .cels-spot`).append(arrCels);
+  }
 }

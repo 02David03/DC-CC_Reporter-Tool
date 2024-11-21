@@ -9,7 +9,7 @@ from test_results import TestResults
 from test_driver import test_c_function
 from dc_cc_analyzer import Analyzer
 from c_function import CFunction
-from reports import report_test_results_in_terminal, report_analysis_results_in_terminal
+from reports import report_results_in_js
 
 
 arg_parser = argparse.ArgumentParser(
@@ -70,15 +70,13 @@ if opts.test:
     compare = create_param_value_comparator(opts.precision)
 
     test_results = TestResults(function_defs)
+
     c_function = CFunction(c_library_path, opts.sut, sut_def)
 
     test_c_function(c_function, sut_def, test_results, opts.test_csv, compare)
-    report_test_results_in_terminal(test_results)
-
 
     if opts.analyze:
         analyzer = Analyzer(test_results, c_function, compare)
         analysis_results = analyzer.analyze_dc_cc()
-        report_analysis_results_in_terminal(analysis_results)
-        analysis_results = analyzer.analyze_with_tricked_variables(analysis_results, opts.source_dir, opts.storage_dir)
-        report_analysis_results_in_terminal(analysis_results)
+        analysis_results_tricked = analyzer.analyze_with_tricked_variables(analysis_results, opts.source_dir, opts.storage_dir)
+        report_results_in_js(test_results, analysis_results, analysis_results_tricked.internal_vars)

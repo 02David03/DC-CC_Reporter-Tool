@@ -35,8 +35,8 @@ def test_c_function (sut_function, sut_def, test_results, test_csv, compare):
                 actual_result = var.value
                 outputs.append(actual_result)
                 if not compare(expected_result, actual_result):
-                    param_name = sut_def[i]['name']
-                    test_results.register_failure(row_index+1, param_name, row[i], actual_result)
+                    param_idx = len(outputs) - 1
+                    test_results.register_failure(row_index, param_idx, row[i], actual_result)
 
             test_results.add(inputs, outputs, collector.get_data())
 
