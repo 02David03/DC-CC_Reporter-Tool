@@ -1,10 +1,6 @@
 from pycparser import c_ast
 
-
-def find_return_statement (statement_list):
-    for (i, stmt) in enumerate(statement_list):
-        if isinstance(stmt, c_ast.Return):
-            return i
+from instrumentation_helpers import find_return_statement
 
 
 class ElicitationCodeSetter (c_ast.NodeVisitor):

@@ -1,12 +1,8 @@
 from pycparser import c_ast
 from elicitation_code_setter import ElicitationCodeSetter
+from filehandle_closer import FilehandleCloser
 
-KCG_TYPE_TO_LITERAL_TYPE = {
-    'kcg_int': 'int',
-    'kcg_real': 'double',
-    'kcg_bool': 'char',
-    'kcg_char': 'char'
-}
+from instrumentation_helpers import expand_kcg_type
 
 LITERAL_TYPE_TO_FORMAT = {
     'int': '%d',
@@ -16,6 +12,10 @@ LITERAL_TYPE_TO_FORMAT = {
 }
 
 DELIMITER = '©©©©'
+
+INSTRUMENTATION_C_FILEHANDLE = '_sigma_four_file'
+
+SUT_RUN_TOKEN = DELIMITER + 'SUT_RUN' + DELIMITER
 
 
 class ProxyAST ():
@@ -27,8 +27,12 @@ class ProxyAST ():
 
     def get_nodes (self, return_statement_node=None):
         delimiter_node = c_ast.FuncCall(
-            name=c_ast.ID(name='printf'),
+            name=c_ast.ID(name='fprintf'),
             args=c_ast.ExprList(exprs=[
+                c_ast.Constant(
+                    type='string',
+                    value=INSTRUMENTATION_C_FILEHANDLE
+                ),
                 c_ast.Constant(
                     type='string',
                     value=self.delimiter_string
@@ -48,33 +52,30 @@ class ProxyAST ():
         ))
         if return_statement_node:
             printf_args_nodes.append(return_statement_node.expr)
+
+        intercept_instruction = None
         if len(printf_args_nodes):
             intercept_instruction = c_ast.FuncCall(
-                    name=c_ast.ID(name='printf'),
+                    name=c_ast.ID(name='fprintf'),
                     args=c_ast.ExprList(exprs=[
+                        c_ast.Constant(
+                            type='string',
+                            value=INSTRUMENTATION_C_FILEHANDLE
+                        ),
                         printf_format_node,
                         *printf_args_nodes
                     ])
             )
-        else:
-            intercept_instruction = None
+            
         return [delimiter_node, intercept_instruction, delimiter_node]
-
-
-# Simulink defines its own KCG types (header "kcg_types.h")
-def expand_kcg_type (some_type):
-    literal_type = KCG_TYPE_TO_LITERAL_TYPE.get(some_type)
-    if literal_type:
-        return literal_type
-    else:
-        return some_type
         
 
 class ElicitationInstrumentation (c_ast.NodeVisitor):
     functions = {}
     
-    def __init__(self, sut_name):
+    def __init__(self, sut_name, output_file_path):
         self.sut_name = sut_name
+        self.output_file_path = output_file_path
 
     def visit_FuncDef(self, node):
         function_name = node.decl.name
@@ -135,9 +136,44 @@ class ElicitationInstrumentation (c_ast.NodeVisitor):
             printf_output_formats.append(LITERAL_TYPE_TO_FORMAT[function_return_type])
         self.functions[function_name] = params
         
-        # don't instrument main SUT function,
-        # we get its return through ctypes foreign function interface
-        if function_name != self.sut_name:
+        
+        if function_name == self.sut_name:
+            fopen_call = c_ast.FuncCall(
+                name=c_ast.ID(name='fopen'),
+                args=c_ast.ExprList(exprs=[
+                    c_ast.Constant(
+                        type='string',
+                        value='"%s"' % self.output_file_path
+                    ),
+                    c_ast.Constant(
+                        type='string',
+                        value='"a"'
+                    )
+                ])
+            )
+            sut_run_print = c_ast.FuncCall(
+                name=c_ast.ID(name='fprintf'),
+                args=c_ast.ExprList(exprs=[
+                    c_ast.ID(name=INSTRUMENTATION_C_FILEHANDLE),
+                    c_ast.Constant(
+                        type='string',
+                        value='"%s\\n"' % SUT_RUN_TOKEN
+                    )
+                ])
+            )
+            node.body.block_items = [
+                    c_ast.Assignment(
+                    op='=',
+                    lvalue=c_ast.ID(name=INSTRUMENTATION_C_FILEHANDLE),
+                    rvalue=fopen_call
+                ),
+                sut_run_print,
+                *node.body.block_items
+            ]
+            FilehandleCloser(INSTRUMENTATION_C_FILEHANDLE, with_return).visit(node)
+        else:
+            # don't instrument main SUT function,
+            # we get its return through ctypes foreign function interface
             input_proxy_ast = ProxyAST(
                 '"\\n' + DELIMITER + function_name + '.in' + '\\n"',
                 printf_input_formats,

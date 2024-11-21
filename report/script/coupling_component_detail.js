@@ -56,7 +56,7 @@ function mountComponentList(componentsArr = components) {
 
 function setVarsAndOutputs() {
   outputs = Object.keys(Object.values(couplingSUT)[0]).filter(name => name !== 'analysed');
-  vars = Object.keys(tests[0][3]);
+  vars = Object.keys(tests[0].internal_vars);
 }
 
 $(document).on('input', '#component-filter', function() {
@@ -81,21 +81,21 @@ function mountComponentTable() {
   for (let i = 0; i < tests.length; i++) {
     insertTableCel('test-col', `Teste ${i + 1}`, (i % 2 === 0));
   }
-  insertTableCol(vars, 3, 'comp-vars-col', true);
-  insertTableCol(outputs, 1, 'sut-outputs-col');
+  insertTableCol(vars, 'internal_vars', 'comp-vars-col', true);
+  insertTableCol(outputs, 'outputs', 'sut-outputs-col');
 }
 
 function insertTableCel(el_id, text, isDark) {
   $(`#${el_id}`).append(`<div class='table-cel ${isDark ? 'dark' : ''}'>` + text + "</div>");
 }
 
-function insertTableCol(subhead_arr, index, el_id, is_obj = false) {
+function insertTableCol(subhead_arr, fieldName, el_id, is_obj = false) {
   for (let i = 0; i < subhead_arr.length; i++) {
     let arrCels = "<div class='d-flex flex-column align-items-center w-100'>";
     const subhead = subhead_arr[i];
     arrCels += "<div class='subhead-table-cel w-100'>" + subhead + "</div>"
     for (let j = 0; j < tests.length; j++) {
-      let cel = is_obj ? tests[j][index][subhead_arr[i]] : tests[j][index][i];
+      let cel = is_obj ? tests[j][fieldName][subhead_arr[i]] : tests[j][fieldName][i];
       arrCels += `<div class="table-cel text-wrap w-100 ${j % 2 === 0 ? 'dark' : ''}" >` + cel + "</div>"
     }
     arrCels += '</div>';
