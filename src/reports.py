@@ -23,7 +23,7 @@ def report_results_in_js (components_defs, test_results, analysis_results, analy
         file.close()
     print('Relatório de cobertura da análise de DC/CC montado, acesse o relatório em report/index.html')
     index_html_path = os.path.abspath('./report/index.html')
-    webbrowser.open_new(index_html_path)
+    os.system("cd report && explorer.exe index.html")
 
 
 def _init_components (internal_vars, components_defs, forced_analysis):
