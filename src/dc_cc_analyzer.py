@@ -36,9 +36,9 @@ class Analyzer ():
 
         analysis_results = AnalysisResults(input_params, internal_vars)
 
-        for (param_idx, u) in combinations(range(len(self.test_results)), 2):
-            (inputs_a, outputs_a, expected_outputs_a, internal_vars_a) = self.test_results[param_idx]
-            (inputs_b, outputs_b, expected_outputs_b, internal_vars_b) = self.test_results[u]
+        for test_no_a, test_no_b in combinations(range(len(self.test_results)), 2):
+            (inputs_a, outputs_a, expected_outputs_a, internal_vars_a) = self.test_results[test_no_a]
+            (inputs_b, outputs_b, expected_outputs_b, internal_vars_b) = self.test_results[test_no_b]
 
             equal_outputs = all(starmap(
                 self.compare,
@@ -58,7 +58,7 @@ class Analyzer ():
             #SUT analysis        
             if varied_inputs_count == 1:
                 if equal_outputs:
-                    print('Same output tests %d and %d, varied parameter:' % (param_idx+1, u+1))
+                    print('Same output tests %d and %d, varied parameter:' % (test_no_a+1, test_no_b+1))
                     print(' ', varied_input_msg)
                     if analysis_results.input_params[varied_input_name]['status'] == AnalysisStatus.AMBIGUOUS:
                         analysis_results.input_params[varied_input_name]['status'] = AnalysisStatus.PROBLEMATIC
@@ -71,8 +71,8 @@ class Analyzer ():
                             analysis_results.input_params[varied_input_name][current_output] = []
 
                         if not self.compare(outputs_a[k], outputs_b[k]):
-                            if not (param_idx + 1, u + 1) in analysis_results.input_params[varied_input_name][current_output]:
-                                analysis_results.input_params[varied_input_name][current_output].append((param_idx + 1, u + 1))
+                            if not (test_no_a + 1, test_no_b + 1) in analysis_results.input_params[varied_input_name][current_output]:
+                                analysis_results.input_params[varied_input_name][current_output].append((test_no_a + 1, test_no_b + 1))
             
             #Internal variables analysis
             changed_variable = None
