@@ -52,6 +52,11 @@ c_function = CFunction(c_library_path, opts.sut, sut_def)
 test_results = TestResults(function_defs)
 
 test_c_function(c_function, sut_def, test_results, test_csv, compare)
+MIN_TESTS = 2
+if len(test_results) < MIN_TESTS:
+    print('Insufficient tests for DC|CC analysis !')
+    print('Supply at least %d tests.' % MIN_TESTS)
+    exit(1)
 instrumentation_data_filehandle = open(os.path.join(OUTPUT_FOLDER, instrument.INSTRUMENTATION_OUTPUT_FILE))
 test_results.process_instrumentation_data(instrumentation_data_filehandle)
 instrumentation_data_filehandle.close()
