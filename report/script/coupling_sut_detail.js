@@ -12,7 +12,7 @@ function mountAnalysesGRN0() {
     } else {
       let hasAnyValue = false;
       Object.entries(subObj).forEach(entry => {
-        if(entry[0] !== "analysed" && entry[1] !== null) hasAnyValue = true;
+        if(entry[0] !== "analysed" && entry[1] !== null && entry[1].length > 0) hasAnyValue = true;
       })
       if(hasAnyValue) {
         graphData[0]++
@@ -83,7 +83,7 @@ function insertOutputsTableCelArray(outputs) {
           return 'teste ' + testes[0] +' <=> ' + 'teste ' + testes[1];
         }).join('<br>') + "</div>";
       } else {
-        arrCels += `<div class="table-cel justify-content-center ${entry[0] % 2 === 0 ? 'dark' : ''}"> # </div>`;
+        arrCels += `<div class="table-cel justify-content-center ${entry[0] % 2 === 0 ? 'dark' : ''}"> X </div>`;
       }
     }
     arrCels += '</div>';

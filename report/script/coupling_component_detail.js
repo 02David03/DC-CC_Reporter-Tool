@@ -126,7 +126,7 @@ function insertVarsCol(coupled_vars) {
     
     outputs.forEach((output, i) => {
       let coupled = entry[1].sut_outputs.includes(output);
-      arrCels += `<div class="table-cel text-wrap w-100 ${i % 2 === 0 ? 'dark' : ''} ${coupled ? 'coupled' : ''}">` + (coupled ? 'X' : 'O') + "</div>"
+      arrCels += `<div class="table-cel text-wrap w-100 ${i % 2 === 0 ? 'dark' : ''} ${coupled ? 'coupled' : ''}">` + (coupled ? 'O' : 'X') + "</div>"
     });
 
     arrCels += '</div>';
