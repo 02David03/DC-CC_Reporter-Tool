@@ -22,6 +22,10 @@ FUNCTIONS_JSON_FILE = 'functions.json'
 
 def _instrument (transformations, source_dir, output_dir):
 
+    if not shutil.which('gcc'):
+        print('You must have GCC installed !')
+        exit(1)
+
     c_files = list(filter(
         lambda f: f.endswith('.c'),
         os.listdir(source_dir)

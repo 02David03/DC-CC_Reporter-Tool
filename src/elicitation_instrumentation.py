@@ -75,7 +75,9 @@ class ElicitationInstrumentation (c_ast.NodeVisitor):
     
     def __init__(self, sut_name, output_file_path):
         self.sut_name = sut_name
-        self.output_file_path = output_file_path
+        # Since this value will be used inside a string,
+        # make sure it is escaped.
+        self.output_file_path = output_file_path.replace('\\', '\\\\')
 
     def visit_FuncDef(self, node):
         function_name = node.decl.name
