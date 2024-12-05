@@ -57,6 +57,7 @@ function setInputsAndOutputs() {
 
 
 function mountComponentList(componentsArr = components) {
+  $('#components-list').children().remove();
   componentsArr.forEach((component, index) => {
     if(Object.keys(component['couplings']).length !== 0) {
       $('#components-list').append(`<a href='coupling_component_detail.html?component=${index}'>` + component.name + "</a>");
